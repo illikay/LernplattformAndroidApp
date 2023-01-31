@@ -14,6 +14,5 @@ data class Exam(
 	var erstellDatum: String = "",
 	var aenderungsDatum: String = "",
 	var anzahlFragen: Int  = 0,
-	var questions: ArrayList<Question> = ArrayList<Question>()
 ) : Parcelable
 

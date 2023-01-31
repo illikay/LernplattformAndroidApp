@@ -61,10 +61,10 @@ class ExamDetailActivity : AppCompatActivity() {
 
     }
 
-    private fun loadDetails(id: Int) {
+    private fun loadDetails(examId: Int) {
 
         val examService = ServiceBuilder.buildService(ExamService::class.java)
-        val requestCall = examService.getExam(id)
+        val requestCall = examService.getExam(examId)
 
         requestCall.enqueue(object : retrofit2.Callback<Exam> {
 
@@ -142,12 +142,12 @@ class ExamDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun initDeleteButton(id: Int) {
+    private fun initDeleteButton(examId: Int) {
 
         B.btnDelete.setOnClickListener {
 
             val examService = ServiceBuilder.buildService(ExamService::class.java)
-            val requestCall = examService.deleteExam(id)
+            val requestCall = examService.deleteExam(examId)
 
             requestCall.enqueue(object: Callback<Unit> {
 
