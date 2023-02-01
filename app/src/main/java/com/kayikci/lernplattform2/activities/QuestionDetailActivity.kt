@@ -1,0 +1,168 @@
+package com.kayikci.lernplattform2.activities
+
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.MenuItem
+import android.widget.Toast
+
+import com.kayikci.lernplattform2.databinding.ActivityQuestionDetailBinding
+import com.kayikci.lernplattform2.models.Exam
+import com.kayikci.lernplattform2.models.Question
+import com.kayikci.lernplattform2.services.ExamService
+import com.kayikci.lernplattform2.services.QuestionService
+import com.kayikci.lernplattform2.services.ServiceBuilder
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.*
+
+class QuestionDetailActivity : AppCompatActivity() {
+
+    private lateinit var B: ActivityQuestionDetailBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        B = ActivityQuestionDetailBinding.inflate(layoutInflater)
+        setContentView(B.root)
+
+        setSupportActionBar(B.questionDetailToolbar)
+        // Show the Up button in the action bar.
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val bundle: Bundle? = intent.extras
+
+        var questionId = 0
+
+        var examId = 0
+
+        if (bundle?.containsKey(Question_ARG_ITEM_ID)!!) {
+
+            questionId = intent.getIntExtra(Question_ARG_ITEM_ID, 0)
+
+            examId = intent.getIntExtra("actualExam", 0)
+
+            loadDetails(questionId, examId)
+
+            initUpdateButton(questionId, examId)
+
+            initDeleteButton(questionId)
+        }
+
+    }
+
+    private fun loadDetails(questionId: Int, examId: Int) {
+
+        val questionService = ServiceBuilder.buildService(QuestionService::class.java)
+        val requestCall = questionService.getQuestion(examId, questionId)
+
+        requestCall.enqueue(object : retrofit2.Callback<Question> {
+
+            override fun onResponse(call: Call<Question>, response: Response<Question>) {
+
+                if (response.isSuccessful) {
+                    val question = response.body()
+                    question?.let {
+                        B.etFragestellung.setText(question.questionFrage)
+                        B.etHinweis.setText(question.questionHinweis)
+                        B.etLoesung.setText(question.questionLoesung)
+
+                        B.questionCollapsingToolbar.title = question.questionFrage
+                    }
+                } else {
+                    Toast.makeText(this@QuestionDetailActivity, "Failed to retrieve details", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+            override fun onFailure(call: Call<Question>, t: Throwable) {
+                Toast.makeText(
+                    this@QuestionDetailActivity,
+                    "Failed to retrieve details " + t.toString(),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+    private fun initUpdateButton(questionId: Int, examId: Int) {
+
+        B.btnUpdate.setOnClickListener {
+            var newQuestion = Question()
+
+            newQuestion.questionFrage = B.etFragestellung.text.toString()
+            newQuestion.questionHinweis = B.etHinweis.text.toString()
+            newQuestion.questionLoesung = B.etLoesung.text.toString()
+
+            val format = SimpleDateFormat("dd.MM.YYYY HH:mm:ss")
+            val dateString: String = format.format(Date())
+            newQuestion.erstellDatum = dateString
+            newQuestion.aenderungsDatum = dateString
+            newQuestion.isBeantwortet = true
+
+            val questionService = ServiceBuilder.buildService(QuestionService::class.java)
+            val requestCall = questionService.updateQuestion(examId , questionId, newQuestion)
+
+            requestCall.enqueue(object: Callback<Question> {
+
+                override fun onResponse(call: Call<Question>, response: Response<Question>) {
+                    if (response.isSuccessful) {
+                        finish() // Move back to DestinationListActivity
+                        var updatedQuestion = response.body() // Use it or ignore It
+                        Toast.makeText(this@QuestionDetailActivity,
+                            "Item Updated Successfully", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@QuestionDetailActivity,
+                            "Failed to update item", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<Question>, t: Throwable) {
+                    Toast.makeText(this@QuestionDetailActivity,
+                        "Failed to update item", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+    }
+
+    private fun initDeleteButton(examId: Int) {
+
+        B.btnDelete.setOnClickListener {
+
+            val examService = ServiceBuilder.buildService(ExamService::class.java)
+            val requestCall = examService.deleteExam(examId)
+
+            requestCall.enqueue(object: Callback<Unit> {
+
+                override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                    if (response.isSuccessful) {
+                        finish() // Move back to DestinationListActivity
+                        Toast.makeText(this@QuestionDetailActivity, "Successfully Deleted", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@QuestionDetailActivity, "Failed to Delete", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<Unit>, t: Throwable) {
+                    Toast.makeText(this@QuestionDetailActivity, "Failed to Delete", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == android.R.id.home) {
+            navigateUpTo(Intent(this, ExamListActivity::class.java))
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    companion object {
+
+        const val Question_ARG_ITEM_ID = "question_item_id"
+        var globalExam: Exam = Exam()
+    }
+}

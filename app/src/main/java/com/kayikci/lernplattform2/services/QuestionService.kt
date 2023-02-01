@@ -8,10 +8,11 @@ import retrofit2.http.*
 interface QuestionService {
 
     @GET("/exam/{examId}/questions")
-    fun getQuestionList(): Call<List<Exam>>
+    fun getQuestionList(): Call<List<Question>>
 
-    /*@GET("question/{id}")
-    fun getQuestion(@Path("id") id: Int): Call<Question>*/
+    @GET("/exam/{examId}/questions/{questionId}")
+    fun getQuestion(@Path("examId") examId: Int, @Path("questionId") questionId: Int): Call<Question>
+
 
     @POST("/exam/{examId}/questions")
     fun addQuestion(@Path("examId") examId: Int, @Body newQuestion: Question): Call<Question>

@@ -35,17 +35,17 @@ class ExamDetailActivity : AppCompatActivity() {
 
         val bundle: Bundle? = intent.extras
 
-        var id = 0
+        var globalExamId = 0
 
         if (bundle?.containsKey(ARG_ITEM_ID)!!) {
 
-            id = intent.getIntExtra(ARG_ITEM_ID, 0)
+            globalExamId = intent.getIntExtra(ARG_ITEM_ID, 0)
 
-            loadDetails(id)
+            loadDetails(globalExamId)
 
-            initUpdateButton(id)
+            initUpdateButton(globalExamId)
 
-            initDeleteButton(id)
+            initDeleteButton(globalExamId)
         }
 
 
@@ -55,7 +55,7 @@ class ExamDetailActivity : AppCompatActivity() {
             val intent = Intent(this@ExamDetailActivity, QuestionCreateActivity::class.java)
 
             intent.putExtra("actualExam", globalExam)
-            intent.putExtra("StringId", id)
+            intent.putExtra("StringId", globalExamId)
             startActivity(intent)
         }
 

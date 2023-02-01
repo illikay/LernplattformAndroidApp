@@ -21,13 +21,13 @@ class ExamAdapter(private val destinationList: List<Exam>) : RecyclerView.Adapte
 
 	override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-		holder.destination = destinationList[position]
+		holder.exam = destinationList[position]
 		holder.txvDestination.text = destinationList[position].pruefungsName
 
 		holder.itemView.setOnClickListener { v ->
 			val context = v.context
 			val intent = Intent(context, ExamDetailActivity::class.java)
-			intent.putExtra(ExamDetailActivity.ARG_ITEM_ID, holder.destination!!.id)
+			intent.putExtra(ExamDetailActivity.ARG_ITEM_ID, holder.exam!!.id)
 
 			context.startActivity(intent)
 		}
@@ -39,8 +39,8 @@ class ExamAdapter(private val destinationList: List<Exam>) : RecyclerView.Adapte
 
 	class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-		val txvDestination: TextView = itemView.findViewById(R.id.txv_exam)
-		var destination: Exam? = null
+		val txvDestination: TextView = itemView.findViewById(R.id.txv_question)
+		var exam: Exam? = null
 
 		override fun toString(): String {
 			return """${super.toString()} '${txvDestination.text}'"""
