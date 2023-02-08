@@ -39,7 +39,7 @@ class ExamAdapter(private val destinationList: List<Exam>) : RecyclerView.Adapte
 
 	class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-		val txvDestination: TextView = itemView.findViewById(R.id.txv_question)
+		val txvDestination: TextView = itemView.findViewById(R.id.txv_exam)
 		var exam: Exam? = null
 
 		override fun toString(): String {

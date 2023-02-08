@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 
 import com.kayikci.lernplattform2.databinding.ActivityExamDetailBinding
 import com.kayikci.lernplattform2.models.Exam
-import com.kayikci.lernplattform2.models.Question
 import com.kayikci.lernplattform2.services.ExamService
 import com.kayikci.lernplattform2.services.ServiceBuilder
 import retrofit2.Call
@@ -17,7 +16,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 
 class ExamDetailActivity : AppCompatActivity() {
@@ -35,17 +34,17 @@ class ExamDetailActivity : AppCompatActivity() {
 
         val bundle: Bundle? = intent.extras
 
-        var globalExamId = 0
+        var id = 0
 
         if (bundle?.containsKey(ARG_ITEM_ID)!!) {
 
-            globalExamId = intent.getIntExtra(ARG_ITEM_ID, 0)
+            id = intent.getIntExtra(ARG_ITEM_ID, 0)
 
-            loadDetails(globalExamId)
+            loadDetails(id)
 
-            initUpdateButton(globalExamId)
+            initUpdateButton(id)
 
-            initDeleteButton(globalExamId)
+            initDeleteButton(id)
         }
 
 
@@ -55,16 +54,16 @@ class ExamDetailActivity : AppCompatActivity() {
             val intent = Intent(this@ExamDetailActivity, QuestionCreateActivity::class.java)
 
             intent.putExtra("actualExam", globalExam)
-            intent.putExtra("StringId", globalExamId)
+            intent.putExtra("StringId", id)
             startActivity(intent)
         }
 
     }
 
-    private fun loadDetails(examId: Int) {
+    private fun loadDetails(id: Int) {
 
         val examService = ServiceBuilder.buildService(ExamService::class.java)
-        val requestCall = examService.getExam(examId)
+        val requestCall = examService.getExam(id)
 
         requestCall.enqueue(object : retrofit2.Callback<Exam> {
 
@@ -142,12 +141,12 @@ class ExamDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun initDeleteButton(examId: Int) {
+    private fun initDeleteButton(id: Int) {
 
         B.btnDelete.setOnClickListener {
 
             val examService = ServiceBuilder.buildService(ExamService::class.java)
-            val requestCall = examService.deleteExam(examId)
+            val requestCall = examService.deleteExam(id)
 
             requestCall.enqueue(object: Callback<Unit> {
 
@@ -182,3 +181,4 @@ class ExamDetailActivity : AppCompatActivity() {
         var globalExam:Exam = Exam()
     }
 }
+

@@ -1,5 +1,6 @@
 package com.kayikci.lernplattform2.helpers
 
+/*
 import com.kayikci.lernplattform2.models.Exam
 import java.util.*
 
@@ -78,3 +79,4 @@ object SampleData {
 		}
 	}
 }
+*/

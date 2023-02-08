@@ -47,7 +47,7 @@ class QuestionDetailActivity : AppCompatActivity() {
 
             initUpdateButton(questionId, examId)
 
-            initDeleteButton(questionId)
+            initDeleteButton(questionId, examId)
         }
 
     }
@@ -126,12 +126,12 @@ class QuestionDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun initDeleteButton(examId: Int) {
+    private fun initDeleteButton(examId: Int, questionId: Int) {
 
         B.btnDelete.setOnClickListener {
 
-            val examService = ServiceBuilder.buildService(ExamService::class.java)
-            val requestCall = examService.deleteExam(examId)
+            val questionService = ServiceBuilder.buildService(QuestionService::class.java)
+            val requestCall = questionService.deleteQuestion(examId, questionId)
 
             requestCall.enqueue(object: Callback<Unit> {
 
@@ -154,7 +154,8 @@ class QuestionDetailActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         if (id == android.R.id.home) {
-            navigateUpTo(Intent(this, ExamListActivity::class.java))
+            android.R.id.home
+            navigateUpTo(Intent(this, ExamDetailActivity::class.java))
             return true
         }
         return super.onOptionsItemSelected(item)

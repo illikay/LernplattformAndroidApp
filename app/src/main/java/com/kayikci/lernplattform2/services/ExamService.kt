@@ -13,20 +13,20 @@ interface ExamService {
     @GET("exam")
     fun getExamList(): Call<List<Exam>>
 
-    @GET("exam/{examId}")
-    fun getExam(@Path("examId") examId: Int): Call<Exam>
+    @GET("exam/{id}")
+    fun getExam(@Path("id") id: Int): Call<Exam>
 
     @POST("exam")
     fun addExam(@Body newExam: Exam): Call<Exam>
 
 
-    @PUT("exam/{examId}")
-    fun updateExam(@Path("examId") examId: Int, @Body exam: Exam): Call<Exam>
+    @PUT("exam/{id}")
+    fun updateExam(@Path("id") id: Int, @Body exam: Exam): Call<Exam>
 
 
 
-    @DELETE("exam/{examId}")
-    fun deleteExam(@Path("examId") examId: Int): Call<Unit>
+    @DELETE("exam/{id}")
+    fun deleteExam(@Path("id") id: Int): Call<Unit>
 }
 
 
