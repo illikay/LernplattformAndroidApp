@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Question(
-
+    //Comment
     var id: Long = 0,
     var questionFrage: String = "",
     var questionHinweis: String = "",
