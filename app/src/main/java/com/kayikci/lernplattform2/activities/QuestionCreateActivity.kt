@@ -63,7 +63,7 @@ class QuestionCreateActivity : AppCompatActivity() {
 
 
             val questionService = ServiceBuilder.buildService(QuestionService::class.java)
-            val requestCall = questionService.addQuestion(newQuestion)
+            val requestCall = questionService.addQuestion(examId, newQuestion)
 
             requestCall.enqueue(object: Callback<Question> {
 
