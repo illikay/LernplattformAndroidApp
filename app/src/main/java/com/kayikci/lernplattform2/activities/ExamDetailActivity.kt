@@ -32,35 +32,26 @@ class ExamDetailActivity : AppCompatActivity() {
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val bundle: Bundle? = intent.extras
+        val id: Long = intent.getLongExtra("examId", 0)
 
-        var id = 0
+        loadDetails(id)
 
-        if (bundle?.containsKey(ARG_ITEM_ID)!!) {
+        initUpdateButton(id)
 
-            id = intent.getIntExtra(ARG_ITEM_ID, 0)
-
-            loadDetails(id)
-
-            initUpdateButton(id)
-
-            initDeleteButton(id)
-        }
-
-
+        initDeleteButton(id)
 
         B.questionfab.setOnClickListener {
 
             val intent = Intent(this@ExamDetailActivity, QuestionCreateActivity::class.java)
+            intent.putExtra("examIdtoQuestionCreate", id)
 
-            intent.putExtra("actualExam", globalExam)
-            intent.putExtra("StringId", id)
+
             startActivity(intent)
         }
 
     }
 
-    private fun loadDetails(id: Int) {
+    private fun loadDetails(id: Long) {
 
         val examService = ServiceBuilder.buildService(ExamService::class.java)
         val requestCall = examService.getExam(id)
@@ -72,12 +63,12 @@ class ExamDetailActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val exam = response.body()
                     exam?.let {
-                        globalExam = exam
                         B.etName.setText(exam.pruefungsName)
                         B.etInfo.setText(exam.info)
                         B.etBeschreibung.setText(exam.beschreibung)
 
                         B.collapsingToolbar.title = exam.pruefungsName
+                        intent.putExtra("actualExam", exam)
                     }
                 } else {
                     Toast.makeText(this@ExamDetailActivity, "Failed to retrieve details", Toast.LENGTH_SHORT)
@@ -95,7 +86,7 @@ class ExamDetailActivity : AppCompatActivity() {
         })
     }
 
-    private fun initUpdateButton(id: Int) {
+    private fun initUpdateButton(id: Long) {
 
         B.btnUpdate.setOnClickListener {
             var newExam = Exam()
@@ -141,7 +132,7 @@ class ExamDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun initDeleteButton(id: Int) {
+    private fun initDeleteButton(id: Long) {
 
         B.btnDelete.setOnClickListener {
 
@@ -175,10 +166,6 @@ class ExamDetailActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    companion object {
 
-        const val ARG_ITEM_ID = "item_id"
-        var globalExam:Exam = Exam()
-    }
 }
 

@@ -45,7 +45,7 @@ class ExamCreateActivity : AppCompatActivity() {
             newExam.erstellDatum = dateString
             newExam.aenderungsDatum = dateString
             newExam.anzahlFragen = 5
-            newExam.questions = ArrayList<Question>()
+
 
 
             val examService = ServiceBuilder.buildService(ExamService::class.java)

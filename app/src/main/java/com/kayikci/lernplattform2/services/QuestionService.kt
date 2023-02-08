@@ -11,18 +11,18 @@ interface QuestionService {
     fun getQuestionList(): Call<List<Question>>
 
     @GET("/exam/{examId}/questions/{questionId}")
-    fun getQuestion(@Path("examId") examId: Int, @Path("questionId") questionId: Int): Call<Question>
+    fun getQuestion(@Path("examId") examId: Long, @Path("questionId") questionId: Long): Call<Question>
 
 
     @POST("/exam/{examId}/questions")
-    fun addQuestion(@Path("examId") examId: Int, @Body newQuestion: Question): Call<Question>
+    fun addQuestion(@Path("examId") examId: Long, @Body newQuestion: Question): Call<Question>
 
 
     @PUT("/exam/{examId}/questions/{questionId}")
-    fun updateQuestion(@Path("examId") examId: Int, @Path("questionId") questionId: Int, @Body question: Question): Call<Question>
+    fun updateQuestion(@Path("examId") examId: Long, @Path("questionId") questionId: Long, @Body question: Question): Call<Question>
 
 
 
     @DELETE("/exam/{examId}/questions/{questionId}")
-    fun deleteQuestion(@Path("examId") examId: Int, @Path("questionId") questionId: Int): Call<Unit>
+    fun deleteQuestion(@Path("examId") examId: Long, @Path("questionId") questionId: Long): Call<Unit>
 }

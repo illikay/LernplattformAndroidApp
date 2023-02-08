@@ -31,28 +31,20 @@ class QuestionDetailActivity : AppCompatActivity() {
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val bundle: Bundle? = intent.extras
+            val questionId = intent.getLongExtra("questionId", 0)
 
-        var questionId = 0
-
-        var examId = 0
-
-        if (bundle?.containsKey(Question_ARG_ITEM_ID)!!) {
-
-            questionId = intent.getIntExtra(Question_ARG_ITEM_ID, 0)
-
-            examId = intent.getIntExtra("actualExam", 0)
+            val examId = intent.getLongExtra( "examIdtoQuestionCreate", 0)
 
             loadDetails(questionId, examId)
 
             initUpdateButton(questionId, examId)
 
             initDeleteButton(questionId, examId)
-        }
+
 
     }
 
-    private fun loadDetails(questionId: Int, examId: Int) {
+    private fun loadDetails(questionId: Long, examId: Long) {
 
         val questionService = ServiceBuilder.buildService(QuestionService::class.java)
         val requestCall = questionService.getQuestion(examId, questionId)
@@ -86,7 +78,7 @@ class QuestionDetailActivity : AppCompatActivity() {
         })
     }
 
-    private fun initUpdateButton(questionId: Int, examId: Int) {
+    private fun initUpdateButton(questionId: Long, examId: Long) {
 
         B.btnUpdate.setOnClickListener {
             var newQuestion = Question()
@@ -126,7 +118,7 @@ class QuestionDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun initDeleteButton(examId: Int, questionId: Int) {
+    private fun initDeleteButton(examId: Long, questionId: Long) {
 
         B.btnDelete.setOnClickListener {
 
@@ -154,16 +146,11 @@ class QuestionDetailActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         if (id == android.R.id.home) {
-            android.R.id.home
-            navigateUpTo(Intent(this, ExamDetailActivity::class.java))
-            return true
+        navigateUpTo(Intent(this, ExamDetailActivity::class.java))
+        return true
         }
         return super.onOptionsItemSelected(item)
     }
 
-    companion object {
 
-        const val Question_ARG_ITEM_ID = "question_item_id"
-        var globalExam: Exam = Exam()
-    }
 }

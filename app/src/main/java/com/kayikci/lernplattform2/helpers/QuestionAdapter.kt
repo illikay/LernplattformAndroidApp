@@ -7,11 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.kayikci.lernplattform2.R
-import com.kayikci.lernplattform2.activities.ExamDetailActivity
 
 
 import com.kayikci.lernplattform2.activities.QuestionDetailActivity
-import com.kayikci.lernplattform2.activities.QuestionDetailActivity.Companion.Question_ARG_ITEM_ID
+
 
 import com.kayikci.lernplattform2.models.Question
 
@@ -31,10 +30,10 @@ class QuestionAdapter(private val questionList: List<Question>) : RecyclerView.A
         holder.itemView.setOnClickListener { v ->
             val context = v.context
             val intent = Intent(context, QuestionDetailActivity::class.java)
-            intent.putExtra(Question_ARG_ITEM_ID, holder.question!!.id)
-            intent.putExtra("actualExam", ExamDetailActivity.globalExam)
+            intent.putExtra("questionId", holder.question!!.id)
 
             context.startActivity(intent)
+
         }
     }
 

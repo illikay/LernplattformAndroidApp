@@ -34,6 +34,8 @@ class QuestionCreateActivity : AppCompatActivity() {
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val examId = intent.getLongExtra("examIdtoQuestionCreate", 0)
+
         var actualExam:Exam? = null
 
         if (Build.VERSION.SDK_INT >= 33) {
@@ -42,7 +44,6 @@ class QuestionCreateActivity : AppCompatActivity() {
             actualExam = intent.getParcelableExtra("actualExam")
         }
 
-        val examId = intent.getIntExtra("StringId", 0)
 
 
         B.btnQuestionAdd.setOnClickListener {
@@ -57,10 +58,7 @@ class QuestionCreateActivity : AppCompatActivity() {
             newQuestion.erstellDatum = dateString
             newQuestion.aenderungsDatum = dateString
             newQuestion.isBeantwortet = true
-            if (actualExam != null) {
-                newQuestion.exam = actualExam
-            }
-
+            newQuestion.exam = actualExam
 
             val questionService = ServiceBuilder.buildService(QuestionService::class.java)
             val requestCall = questionService.addQuestion(examId, newQuestion)
