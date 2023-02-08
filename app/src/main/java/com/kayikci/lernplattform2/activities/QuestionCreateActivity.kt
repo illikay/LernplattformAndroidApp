@@ -2,13 +2,13 @@ package com.kayikci.lernplattform2.activities
 
 import android.os.Build
 import android.os.Bundle
-
+import android.os.Parcelable
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.kayikci.lernplattform2.databinding.ActivityQuestionCreateBinding
 import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.models.Question
-
+import com.kayikci.lernplattform2.services.ExamService
 import com.kayikci.lernplattform2.services.QuestionService
 import com.kayikci.lernplattform2.services.ServiceBuilder
 import retrofit2.Call
@@ -42,8 +42,6 @@ class QuestionCreateActivity : AppCompatActivity() {
             actualExam = intent.getParcelableExtra("actualExam")
         }
 
-
-
         val examId = intent.getIntExtra("StringId", 0)
 
 
@@ -65,7 +63,7 @@ class QuestionCreateActivity : AppCompatActivity() {
 
 
             val questionService = ServiceBuilder.buildService(QuestionService::class.java)
-            val requestCall = questionService.addQuestion(examId, newQuestion)
+            val requestCall = questionService.addQuestion(newQuestion)
 
             requestCall.enqueue(object: Callback<Question> {
 
