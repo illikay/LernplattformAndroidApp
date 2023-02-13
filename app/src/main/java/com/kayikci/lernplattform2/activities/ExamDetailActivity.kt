@@ -8,8 +8,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 import com.kayikci.lernplattform2.databinding.ActivityExamDetailBinding
+import com.kayikci.lernplattform2.helpers.ExamAdapter
+import com.kayikci.lernplattform2.helpers.QuestionAdapter
 import com.kayikci.lernplattform2.models.Exam
+import com.kayikci.lernplattform2.models.Question
 import com.kayikci.lernplattform2.services.ExamService
+import com.kayikci.lernplattform2.services.QuestionService
 import com.kayikci.lernplattform2.services.ServiceBuilder
 import retrofit2.Call
 import retrofit2.Callback
@@ -35,6 +39,8 @@ class ExamDetailActivity : AppCompatActivity() {
         val id: Long = intent.getLongExtra("examId", 0)
 
         loadDetails(id)
+
+        loadQuestions(id)
 
         initUpdateButton(id)
 
@@ -164,6 +170,50 @@ class ExamDetailActivity : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val id: Long = intent.getLongExtra("examId", 0)
+        loadQuestions(id)
+    }
+
+    private fun loadQuestions(id:Long) {
+
+        val questionService = ServiceBuilder.buildService(QuestionService::class.java)
+
+        val filter = HashMap<String, String>()
+//        filter["country"] = "India"
+//        filter["count"] = "1"
+
+        val requestCall = questionService.getQuestionList(id)
+
+        requestCall.enqueue(object: Callback<List<Question>> {
+
+            // If you receive a HTTP Response, then this method is executed
+            // Your STATUS Code will decide if your Http Response is a Success or Error
+            override fun onResponse(call: Call<List<Question>>, response: Response<List<Question>>) {
+                if (response.isSuccessful) {
+                    // Your status code is in the range of 200's
+                    val questionList = response.body()!!
+                    B.questionRecyclerView.adapter = QuestionAdapter(questionList)
+                } else if(response.code() == 401) {
+                    Toast.makeText(this@ExamDetailActivity,
+                        "Your session has expired. Please Login again.", Toast.LENGTH_LONG).show()
+                } else { // Application-level failure
+                    // Your status code is in the range of 300's, 400's and 500's
+                    Toast.makeText(this@ExamDetailActivity, "Failed to retrieve items", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            // Invoked in case of Network Error or Establishing connection with Server
+            // or Error Creating Http Request or Error Processing Http Response
+            override fun onFailure(call: Call<List<Question>>, t: Throwable) {
+                println(t.toString())
+                Toast.makeText(this@ExamDetailActivity, "Error Occurred" + t.toString(), Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
 

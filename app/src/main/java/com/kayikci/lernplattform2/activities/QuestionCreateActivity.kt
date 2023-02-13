@@ -36,6 +36,8 @@ class QuestionCreateActivity : AppCompatActivity() {
 
         val examId = intent.getLongExtra("examIdtoQuestionCreate", 0)
 
+
+
         var actualExam:Exam? = null
 
         if (Build.VERSION.SDK_INT >= 33) {

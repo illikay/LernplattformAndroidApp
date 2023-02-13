@@ -32,6 +32,7 @@ class QuestionAdapter(private val questionList: List<Question>) : RecyclerView.A
             val intent = Intent(context, QuestionDetailActivity::class.java)
             intent.putExtra("questionId", holder.question!!.id)
 
+
             context.startActivity(intent)
 
         }
