@@ -120,33 +120,31 @@
 
 			</LinearLayout>
 
+
 			<FrameLayout
 					android:layout_width="match_parent"
-					android:layout_height="wrap_content">
-
-				<TextView
-						android:text="Fragenkatalog hinzufügen:"
-						android:textSize="16sp"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginTop="26dp"
-						android:gravity="center"
-						android:id="@+id/tv_addquestion" />
+					android:layout_height="match_parent"
+					app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 				<androidx.recyclerview.widget.RecyclerView
+						android:id="@+id/question_recycler_view"
 						android:layout_width="match_parent"
-						android:layout_height="match_parent"
+						android:layout_height="100dp"
 						android:layout_marginTop="64dp"
 						android:orientation="horizontal"
 						app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
 						tools:listitem="@layout/questionlist_item"
-						android:id="@+id/question_recycler_view" />
-			</FrameLayout>
+						tools:context="com.kayikci.lernplattform2.activities.ExamDetailActivity" />
 
+
+
+			</FrameLayout>
 
 		</LinearLayout>
 
 	</androidx.core.widget.NestedScrollView>
+
+
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 			android:id="@+id/questionfab"

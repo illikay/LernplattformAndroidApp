@@ -33,7 +33,8 @@ class QuestionDetailActivity : AppCompatActivity() {
 
             val questionId = intent.getLongExtra("questionId", 0)
 
-            val examId = intent.getLongExtra( "examIdtoQuestionCreate", 0)
+            val examId = intent.getLongExtra( "examId", 0)
+
 
             loadDetails(questionId, examId)
 
@@ -118,7 +119,7 @@ class QuestionDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun initDeleteButton(examId: Long, questionId: Long) {
+    private fun initDeleteButton(questionId: Long, examId: Long, ) {
 
         B.btnDelete.setOnClickListener {
 

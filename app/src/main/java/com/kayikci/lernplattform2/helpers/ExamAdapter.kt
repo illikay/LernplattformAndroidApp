@@ -24,13 +24,14 @@ class ExamAdapter(private val destinationList: List<Exam>) : RecyclerView.Adapte
 		holder.destination = destinationList[position]
 		holder.txvDestination.text = destinationList[position].pruefungsName
 
-		System.out.println("hier ist es 2: " + holder.destination.toString())
+
 
 		holder.itemView.setOnClickListener { v ->
 			val context = v.context
 
 			val intent = Intent(context, ExamDetailActivity::class.java)
 			intent.putExtra("examId", holder.destination!!.id)
+			intent.putExtra("examObject", holder.destination )
 			context.startActivity(intent)
 		}
 	}

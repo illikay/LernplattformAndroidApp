@@ -2,13 +2,14 @@ package com.kayikci.lernplattform2.activities
 
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.kayikci.lernplattform2.databinding.ActivityExamDetailBinding
-import com.kayikci.lernplattform2.helpers.ExamAdapter
 import com.kayikci.lernplattform2.helpers.QuestionAdapter
 import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.models.Question
@@ -22,10 +23,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-
 class ExamDetailActivity : AppCompatActivity() {
 
     private lateinit var B: ActivityExamDetailBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,14 +34,24 @@ class ExamDetailActivity : AppCompatActivity() {
         setContentView(B.root)
 
         setSupportActionBar(B.detailToolbar)
+
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val id: Long = intent.getLongExtra("examId", 0)
 
+        var actualExam:Exam? = null
+
+        if (Build.VERSION.SDK_INT >= 33) {
+            actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
+        } else {
+            actualExam = intent.getParcelableExtra("examObject")
+        }
+
+
         loadDetails(id)
 
-        loadQuestions(id)
+        //loadQuestions(id)
 
         initUpdateButton(id)
 
@@ -49,7 +60,8 @@ class ExamDetailActivity : AppCompatActivity() {
         B.questionfab.setOnClickListener {
 
             val intent = Intent(this@ExamDetailActivity, QuestionCreateActivity::class.java)
-            intent.putExtra("examIdtoQuestionCreate", id)
+            intent.putExtra("examId", id)
+            intent.putExtra("examObject", actualExam)
 
 
             startActivity(intent)
@@ -74,7 +86,6 @@ class ExamDetailActivity : AppCompatActivity() {
                         B.etBeschreibung.setText(exam.beschreibung)
 
                         B.collapsingToolbar.title = exam.pruefungsName
-                        intent.putExtra("actualExam", exam)
                     }
                 } else {
                     Toast.makeText(this@ExamDetailActivity, "Failed to retrieve details", Toast.LENGTH_SHORT)
@@ -181,6 +192,8 @@ class ExamDetailActivity : AppCompatActivity() {
 
     private fun loadQuestions(id:Long) {
 
+        val context = this
+
         val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
         val filter = HashMap<String, String>()
@@ -197,7 +210,13 @@ class ExamDetailActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     // Your status code is in the range of 200's
                     val questionList = response.body()!!
-                    B.questionRecyclerView.adapter = QuestionAdapter(questionList)
+
+                    var adapter = QuestionAdapter(questionList, id)
+
+
+                    B.questionRecyclerView.adapter = adapter
+
+
                 } else if(response.code() == 401) {
                     Toast.makeText(this@ExamDetailActivity,
                         "Your session has expired. Please Login again.", Toast.LENGTH_LONG).show()

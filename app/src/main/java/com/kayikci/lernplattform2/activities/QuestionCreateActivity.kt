@@ -34,16 +34,15 @@ class QuestionCreateActivity : AppCompatActivity() {
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val examId = intent.getLongExtra("examIdtoQuestionCreate", 0)
-
+        val examId = intent.getLongExtra("examId", 0)
 
 
         var actualExam:Exam? = null
 
         if (Build.VERSION.SDK_INT >= 33) {
-            actualExam = intent.getParcelableExtra("actualExam", Exam::class.java)
+            actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
         } else {
-            actualExam = intent.getParcelableExtra("actualExam")
+            actualExam = intent.getParcelableExtra("examObject")
         }
 
 

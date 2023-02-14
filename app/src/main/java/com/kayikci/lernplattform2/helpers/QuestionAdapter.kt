@@ -14,7 +14,7 @@ import com.kayikci.lernplattform2.activities.QuestionDetailActivity
 
 import com.kayikci.lernplattform2.models.Question
 
-class QuestionAdapter(private val questionList: List<Question>) : RecyclerView.Adapter<QuestionAdapter.ViewHolder>() {
+class QuestionAdapter(private val questionList: List<Question>, private val examId:Long) : RecyclerView.Adapter<QuestionAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
@@ -22,7 +22,11 @@ class QuestionAdapter(private val questionList: List<Question>) : RecyclerView.A
         return ViewHolder(view)
     }
 
+
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+
 
         holder.question = questionList[position]
         holder.txvDestination.text = questionList[position].questionFrage
@@ -31,7 +35,7 @@ class QuestionAdapter(private val questionList: List<Question>) : RecyclerView.A
             val context = v.context
             val intent = Intent(context, QuestionDetailActivity::class.java)
             intent.putExtra("questionId", holder.question!!.id)
-
+            intent.putExtra("examId", examId)
 
             context.startActivity(intent)
 
