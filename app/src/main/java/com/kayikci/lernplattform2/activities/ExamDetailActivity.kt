@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,6 +39,7 @@ class ExamDetailActivity : AppCompatActivity() {
 
         val id: Long = intent.getLongExtra("examId", 0)
 
+
         var actualExam:Exam? = null
 
         if (Build.VERSION.SDK_INT >= 33) {
@@ -48,10 +48,53 @@ class ExamDetailActivity : AppCompatActivity() {
             actualExam = intent.getParcelableExtra("examObject")
         }
 
+        //Getting Questions from API
+
+        // getting the recyclerview by its id
+        val recyclerview = B.questionRecyclerView
+
+        // this creates a vertical layout Manager
+        recyclerview.layoutManager = LinearLayoutManager(this)
+
+        val questionService = ServiceBuilder.buildService(QuestionService::class.java)
+
+        val requestCall = questionService.getQuestionList(id)
+
+        requestCall.enqueue(object: Callback<List<Question>> {
+
+            // If you receive a HTTP Response, then this method is executed
+            // Your STATUS Code will decide if your Http Response is a Success or Error
+            override fun onResponse(call: Call<List<Question>>, response: Response<List<Question>>) {
+                if (response.isSuccessful) {
+                    // Your status code is in the range of 200's
+                    val questionList = response.body()!!
+
+                    val adapter = QuestionAdapter(questionList, id )
+
+                    // Setting the Adapter with the recyclerview
+                    recyclerview.adapter = adapter
+
+
+                } else if(response.code() == 401) {
+                    Toast.makeText(this@ExamDetailActivity,
+                        "Your session has expired. Please Login again.", Toast.LENGTH_LONG).show()
+                } else { // Application-level failure
+                    // Your status code is in the range of 300's, 400's and 500's
+                    Toast.makeText(this@ExamDetailActivity, "Failed to retrieve items", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            // Invoked in case of Network Error or Establishing connection with Server
+            // or Error Creating Http Request or Error Processing Http Response
+            override fun onFailure(call: Call<List<Question>>, t: Throwable) {
+                println(t.toString())
+                Toast.makeText(this@ExamDetailActivity, "Error Occurred" + t.toString(), Toast.LENGTH_LONG).show()
+            }
+        })
+
+        //loadQuestions(id, context, )
 
         loadDetails(id)
-
-        //loadQuestions(id)
 
         initUpdateButton(id)
 
@@ -187,7 +230,44 @@ class ExamDetailActivity : AppCompatActivity() {
         super.onResume()
 
         val id: Long = intent.getLongExtra("examId", 0)
-        loadQuestions(id)
+        //loadQuestions(id)
+
+        val questionService = ServiceBuilder.buildService(QuestionService::class.java)
+
+        val requestCall = questionService.getQuestionList(id)
+
+        requestCall.enqueue(object: Callback<List<Question>> {
+
+            // If you receive a HTTP Response, then this method is executed
+            // Your STATUS Code will decide if your Http Response is a Success or Error
+            override fun onResponse(call: Call<List<Question>>, response: Response<List<Question>>) {
+                if (response.isSuccessful) {
+                    // Your status code is in the range of 200's
+                    val questionList = response.body()!!
+
+                    val adapter = QuestionAdapter(questionList, id )
+
+                    B.questionRecyclerView.adapter = adapter
+
+
+                } else if(response.code() == 401) {
+                    Toast.makeText(this@ExamDetailActivity,
+                        "Your session has expired. Please Login again.", Toast.LENGTH_LONG).show()
+                } else { // Application-level failure
+                    // Your status code is in the range of 300's, 400's and 500's
+                    Toast.makeText(this@ExamDetailActivity, "Failed to retrieve items", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            // Invoked in case of Network Error or Establishing connection with Server
+            // or Error Creating Http Request or Error Processing Http Response
+            override fun onFailure(call: Call<List<Question>>, t: Throwable) {
+                println(t.toString())
+                Toast.makeText(this@ExamDetailActivity, "Error Occurred" + t.toString(), Toast.LENGTH_LONG).show()
+            }
+        })
+
+
     }
 
     private fun loadQuestions(id:Long) {
