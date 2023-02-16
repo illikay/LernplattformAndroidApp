@@ -56,7 +56,7 @@ class QuestionCreateActivity : AppCompatActivity() {
             newQuestion.questionLoesung = activityQuestionCreateBinding.etLoesung.text.toString()
 
 
-            val format = SimpleDateFormat("dd.MM.YYYY HH:mm:ss", Locale.GERMANY)
+            val format = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.GERMANY)
             val dateString: String = format.format(Date())
             newQuestion.erstellDatum = dateString
             newQuestion.aenderungsDatum = dateString

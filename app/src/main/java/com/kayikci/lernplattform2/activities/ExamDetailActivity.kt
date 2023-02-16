@@ -128,7 +128,7 @@ class ExamDetailActivity : AppCompatActivity() {
             newExam.info = activityExamDetailBinding.etInfo.text.toString()
             newExam.beschreibung = activityExamDetailBinding.etBeschreibung.text.toString()
 
-            val format = SimpleDateFormat("dd.MM.YYYY HH:mm:ss", Locale.GERMANY)
+            val format = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.GERMANY)
             val dateString: String = format.format(Date())
             newExam.erstellDatum = dateString
             newExam.aenderungsDatum = dateString
