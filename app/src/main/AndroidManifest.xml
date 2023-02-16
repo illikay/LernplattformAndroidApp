@@ -17,9 +17,9 @@
                 android:label="Question Detailansicht"
                 android:theme="@style/AppTheme.NoActionBar"
                 android:parentActivityName="com.kayikci.lernplattform2.activities.ExamDetailActivity">
-        <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.kayikci.lernplattform2.activities.ExamDetailActivity" />
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.kayikci.lernplattform2.activities.ExamDetailActivity" />
         </activity>
         <activity
                 android:name="com.kayikci.lernplattform2.activities.QuestionCreateActivity"

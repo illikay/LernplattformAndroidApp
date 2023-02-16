@@ -1,6 +1,7 @@
 package com.kayikci.lernplattform2.activities
 
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -24,15 +25,15 @@ import java.util.*
 
 class ExamDetailActivity : AppCompatActivity() {
 
-    private lateinit var B: ActivityExamDetailBinding
+    private lateinit var activityExamDetailBinding: ActivityExamDetailBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        B = ActivityExamDetailBinding.inflate(layoutInflater)
-        setContentView(B.root)
+        activityExamDetailBinding = ActivityExamDetailBinding.inflate(layoutInflater)
+        setContentView(activityExamDetailBinding.root)
 
-        setSupportActionBar(B.detailToolbar)
+        setSupportActionBar(activityExamDetailBinding.detailToolbar)
 
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -40,67 +41,34 @@ class ExamDetailActivity : AppCompatActivity() {
         val id: Long = intent.getLongExtra("examId", 0)
 
 
-        var actualExam:Exam? = null
+        val actualExam: Exam?
 
         if (Build.VERSION.SDK_INT >= 33) {
             actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
         } else {
+            @Suppress("DEPRECATION")
             actualExam = intent.getParcelableExtra("examObject")
         }
 
         //Getting Questions from API
 
         // getting the recyclerview by its id
-        val recyclerview = B.questionRecyclerView
+        val recyclerview = activityExamDetailBinding.questionRecyclerView
 
         // this creates a vertical layout Manager
         recyclerview.layoutManager = LinearLayoutManager(this)
 
-        val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
-        val requestCall = questionService.getQuestionList(id)
-
-        requestCall.enqueue(object: Callback<List<Question>> {
-
-            // If you receive a HTTP Response, then this method is executed
-            // Your STATUS Code will decide if your Http Response is a Success or Error
-            override fun onResponse(call: Call<List<Question>>, response: Response<List<Question>>) {
-                if (response.isSuccessful) {
-                    // Your status code is in the range of 200's
-                    val questionList = response.body()!!
-
-                    val adapter = QuestionAdapter(questionList, id )
-
-                    // Setting the Adapter with the recyclerview
-                    recyclerview.adapter = adapter
-
-
-                } else if(response.code() == 401) {
-                    Toast.makeText(this@ExamDetailActivity,
-                        "Your session has expired. Please Login again.", Toast.LENGTH_LONG).show()
-                } else { // Application-level failure
-                    // Your status code is in the range of 300's, 400's and 500's
-                    Toast.makeText(this@ExamDetailActivity, "Failed to retrieve items", Toast.LENGTH_LONG).show()
-                }
-            }
-
-            // Invoked in case of Network Error or Establishing connection with Server
-            // or Error Creating Http Request or Error Processing Http Response
-            override fun onFailure(call: Call<List<Question>>, t: Throwable) {
-                println(t.toString())
-                Toast.makeText(this@ExamDetailActivity, "Error Occurred" + t.toString(), Toast.LENGTH_LONG).show()
-            }
-        })
-
-        //loadQuestions(id, context, )
 
         loadDetails(id)
+
+        loadQuestions(id)
 
         initUpdateButton(id)
 
         initDeleteButton(id)
 
-        B.questionfab.setOnClickListener {
+        activityExamDetailBinding.questionfab.setOnClickListener {
 
             val intent = Intent(this@ExamDetailActivity, QuestionCreateActivity::class.java)
             intent.putExtra("examId", id)
@@ -117,21 +85,25 @@ class ExamDetailActivity : AppCompatActivity() {
         val examService = ServiceBuilder.buildService(ExamService::class.java)
         val requestCall = examService.getExam(id)
 
-        requestCall.enqueue(object : retrofit2.Callback<Exam> {
+        requestCall.enqueue(object : Callback<Exam> {
 
             override fun onResponse(call: Call<Exam>, response: Response<Exam>) {
 
                 if (response.isSuccessful) {
                     val exam = response.body()
                     exam?.let {
-                        B.etName.setText(exam.pruefungsName)
-                        B.etInfo.setText(exam.info)
-                        B.etBeschreibung.setText(exam.beschreibung)
+                        activityExamDetailBinding.etName.setText(exam.pruefungsName)
+                        activityExamDetailBinding.etInfo.setText(exam.info)
+                        activityExamDetailBinding.etBeschreibung.setText(exam.beschreibung)
 
-                        B.collapsingToolbar.title = exam.pruefungsName
+                        activityExamDetailBinding.collapsingToolbar.title = exam.pruefungsName
                     }
                 } else {
-                    Toast.makeText(this@ExamDetailActivity, "Failed to retrieve details", Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        this@ExamDetailActivity,
+                        "Failed to retrieve details",
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
             }
@@ -139,54 +111,56 @@ class ExamDetailActivity : AppCompatActivity() {
             override fun onFailure(call: Call<Exam>, t: Throwable) {
                 Toast.makeText(
                     this@ExamDetailActivity,
-                    "Failed to retrieve details " + t.toString(),
+                    "Failed to retrieve details $t",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         })
     }
 
+    @SuppressLint("WeekBasedYear")
     private fun initUpdateButton(id: Long) {
 
-        B.btnUpdate.setOnClickListener {
-            var newExam = Exam()
+        activityExamDetailBinding.btnUpdate.setOnClickListener {
+            val newExam = Exam()
 
-            newExam.pruefungsName = B.etName.text.toString()
-            newExam.info = B.etInfo.text.toString()
-            newExam.beschreibung = B.etBeschreibung.text.toString()
+            newExam.pruefungsName = activityExamDetailBinding.etName.text.toString()
+            newExam.info = activityExamDetailBinding.etInfo.text.toString()
+            newExam.beschreibung = activityExamDetailBinding.etBeschreibung.text.toString()
 
-            val format = SimpleDateFormat("dd.MM.YYYY HH:mm:ss")
+            val format = SimpleDateFormat("dd.MM.YYYY HH:mm:ss", Locale.GERMANY)
             val dateString: String = format.format(Date())
             newExam.erstellDatum = dateString
             newExam.aenderungsDatum = dateString
             newExam.anzahlFragen = 3
-
-
-
-
 
             val examService = ServiceBuilder.buildService(ExamService::class.java)
             val requestCall = examService.updateExam(id, newExam)
 
 
 
-            requestCall.enqueue(object: Callback<Exam> {
+            requestCall.enqueue(object : Callback<Exam> {
 
                 override fun onResponse(call: Call<Exam>, response: Response<Exam>) {
                     if (response.isSuccessful) {
                         finish() // Move back to DestinationListActivity
-                        var updatedDestination = response.body() // Use it or ignore It
-                        Toast.makeText(this@ExamDetailActivity,
-                            "Item Updated Successfully", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@ExamDetailActivity,
+                            "Item Updated Successfully", Toast.LENGTH_SHORT
+                        ).show()
                     } else {
-                        Toast.makeText(this@ExamDetailActivity,
-                            "Failed to update item", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@ExamDetailActivity,
+                            "Failed to update item", Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
                 override fun onFailure(call: Call<Exam>, t: Throwable) {
-                    Toast.makeText(this@ExamDetailActivity,
-                        "Failed to update item", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@ExamDetailActivity,
+                        "Failed to update item", Toast.LENGTH_SHORT
+                    ).show()
                 }
             })
         }
@@ -194,24 +168,33 @@ class ExamDetailActivity : AppCompatActivity() {
 
     private fun initDeleteButton(id: Long) {
 
-        B.btnDelete.setOnClickListener {
+        activityExamDetailBinding.btnDelete.setOnClickListener {
 
             val examService = ServiceBuilder.buildService(ExamService::class.java)
             val requestCall = examService.deleteExam(id)
 
-            requestCall.enqueue(object: Callback<Unit> {
+            requestCall.enqueue(object : Callback<Unit> {
 
                 override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
                     if (response.isSuccessful) {
                         finish() // Move back to DestinationListActivity
-                        Toast.makeText(this@ExamDetailActivity, "Successfully Deleted", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@ExamDetailActivity,
+                            "Successfully Deleted",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } else {
-                        Toast.makeText(this@ExamDetailActivity, "Failed to Delete", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@ExamDetailActivity,
+                            "Failed to Delete",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
                 override fun onFailure(call: Call<Unit>, t: Throwable) {
-                    Toast.makeText(this@ExamDetailActivity, "Failed to Delete", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ExamDetailActivity, "Failed to Delete", Toast.LENGTH_SHORT)
+                        .show()
                 }
             })
         }
@@ -232,77 +215,46 @@ class ExamDetailActivity : AppCompatActivity() {
         val id: Long = intent.getLongExtra("examId", 0)
         //loadQuestions(id)
 
-        val questionService = ServiceBuilder.buildService(QuestionService::class.java)
-
-        val requestCall = questionService.getQuestionList(id)
-
-        requestCall.enqueue(object: Callback<List<Question>> {
-
-            // If you receive a HTTP Response, then this method is executed
-            // Your STATUS Code will decide if your Http Response is a Success or Error
-            override fun onResponse(call: Call<List<Question>>, response: Response<List<Question>>) {
-                if (response.isSuccessful) {
-                    // Your status code is in the range of 200's
-                    val questionList = response.body()!!
-
-                    val adapter = QuestionAdapter(questionList, id )
-
-                    B.questionRecyclerView.adapter = adapter
-
-
-                } else if(response.code() == 401) {
-                    Toast.makeText(this@ExamDetailActivity,
-                        "Your session has expired. Please Login again.", Toast.LENGTH_LONG).show()
-                } else { // Application-level failure
-                    // Your status code is in the range of 300's, 400's and 500's
-                    Toast.makeText(this@ExamDetailActivity, "Failed to retrieve items", Toast.LENGTH_LONG).show()
-                }
-            }
-
-            // Invoked in case of Network Error or Establishing connection with Server
-            // or Error Creating Http Request or Error Processing Http Response
-            override fun onFailure(call: Call<List<Question>>, t: Throwable) {
-                println(t.toString())
-                Toast.makeText(this@ExamDetailActivity, "Error Occurred" + t.toString(), Toast.LENGTH_LONG).show()
-            }
-        })
-
-
+        loadQuestions(id)
     }
 
-    private fun loadQuestions(id:Long) {
-
-        val context = this
+    private fun loadQuestions(id: Long) {
 
         val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
-        val filter = HashMap<String, String>()
-//        filter["country"] = "India"
-//        filter["count"] = "1"
 
         val requestCall = questionService.getQuestionList(id)
 
-        requestCall.enqueue(object: Callback<List<Question>> {
+        requestCall.enqueue(object : Callback<List<Question>> {
 
             // If you receive a HTTP Response, then this method is executed
             // Your STATUS Code will decide if your Http Response is a Success or Error
-            override fun onResponse(call: Call<List<Question>>, response: Response<List<Question>>) {
+            override fun onResponse(
+                call: Call<List<Question>>,
+                response: Response<List<Question>>
+            ) {
                 if (response.isSuccessful) {
                     // Your status code is in the range of 200's
                     val questionList = response.body()!!
 
-                    var adapter = QuestionAdapter(questionList, id)
+                    val adapter = QuestionAdapter(questionList, id)
 
 
-                    B.questionRecyclerView.adapter = adapter
+                    activityExamDetailBinding.questionRecyclerView.adapter = adapter
 
 
-                } else if(response.code() == 401) {
-                    Toast.makeText(this@ExamDetailActivity,
-                        "Your session has expired. Please Login again.", Toast.LENGTH_LONG).show()
+                } else if (response.code() == 401) {
+                    Toast.makeText(
+                        this@ExamDetailActivity,
+                        "Your session has expired. Please Login again.", Toast.LENGTH_LONG
+                    ).show()
                 } else { // Application-level failure
                     // Your status code is in the range of 300's, 400's and 500's
-                    Toast.makeText(this@ExamDetailActivity, "Failed to retrieve items", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@ExamDetailActivity,
+                        "Failed to retrieve items",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
 
@@ -310,7 +262,8 @@ class ExamDetailActivity : AppCompatActivity() {
             // or Error Creating Http Request or Error Processing Http Response
             override fun onFailure(call: Call<List<Question>>, t: Throwable) {
                 println(t.toString())
-                Toast.makeText(this@ExamDetailActivity, "Error Occurred" + t.toString(), Toast.LENGTH_LONG).show()
+                Toast.makeText(this@ExamDetailActivity, "Error Occurred $t", Toast.LENGTH_LONG)
+                    .show()
             }
         })
     }

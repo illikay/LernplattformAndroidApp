@@ -21,40 +21,37 @@ import retrofit2.Response
 
 class ExamListActivity : AppCompatActivity() {
 
-    private lateinit var B: ActivityExamListBinding
+    private lateinit var activityExamListBinding: ActivityExamListBinding
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-        B = ActivityExamListBinding.inflate(layoutInflater)
-        setContentView(B.root)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activityExamListBinding = ActivityExamListBinding.inflate(layoutInflater)
+        setContentView(activityExamListBinding.root)
 
-		setSupportActionBar(B.toolbar)
-		B.toolbar.title = title
+        setSupportActionBar(activityExamListBinding.toolbar)
+        activityExamListBinding.toolbar.title = title
 
-		B.fab.setOnClickListener {
-			val intent = Intent(this@ExamListActivity, ExamCreateActivity::class.java)
+        activityExamListBinding.fab.setOnClickListener {
+            val intent = Intent(this@ExamListActivity, ExamCreateActivity::class.java)
 
-			startActivity(intent)
-		}
-	}
+            startActivity(intent)
+        }
+    }
 
-	override fun onResume() {
-		super.onResume()
+    override fun onResume() {
+        super.onResume()
 
-		loadDestinations()
-	}
+        loadDestinations()
+    }
 
-	private fun loadDestinations() {
+    private fun loadDestinations() {
 
-		val examService = ServiceBuilder.buildService(ExamService::class.java)
+        val examService = ServiceBuilder.buildService(ExamService::class.java)
 
-        val filter = HashMap<String, String>()
-//        filter["country"] = "India"
-//        filter["count"] = "1"
 
         val requestCall = examService.getExamList()
 
-        requestCall.enqueue(object: Callback<List<Exam>> {
+        requestCall.enqueue(object : Callback<List<Exam>> {
 
             // If you receive a HTTP Response, then this method is executed
             // Your STATUS Code will decide if your Http Response is a Success or Error
@@ -62,21 +59,27 @@ class ExamListActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     // Your status code is in the range of 200's
                     val destinationList = response.body()!!
-                    B.examRecyclerView.adapter = ExamAdapter(destinationList)
-                } else if(response.code() == 401) {
-                    Toast.makeText(this@ExamListActivity,
-                        "Your session has expired. Please Login again.", Toast.LENGTH_LONG).show()
+                    activityExamListBinding.examRecyclerView.adapter = ExamAdapter(destinationList)
+                } else if (response.code() == 401) {
+                    Toast.makeText(
+                        this@ExamListActivity,
+                        "Your session has expired. Please Login again.", Toast.LENGTH_LONG
+                    ).show()
                 } else { // Application-level failure
                     // Your status code is in the range of 300's, 400's and 500's
-                    Toast.makeText(this@ExamListActivity, "Failed to retrieve items", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@ExamListActivity,
+                        "Failed to retrieve items",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
 
             // Invoked in case of Network Error or Establishing connection with Server
             // or Error Creating Http Request or Error Processing Http Response
             override fun onFailure(call: Call<List<Exam>>, t: Throwable) {
-            println(t.toString())
-                Toast.makeText(this@ExamListActivity, "Error Occurred" + t.toString(), Toast.LENGTH_LONG).show()
+                println(t.toString())
+                Toast.makeText(this@ExamListActivity, "Error Occurred $t", Toast.LENGTH_LONG).show()
             }
         })
     }

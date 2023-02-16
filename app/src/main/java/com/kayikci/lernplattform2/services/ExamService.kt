@@ -9,7 +9,6 @@ import java.util.*
 interface ExamService {
 
 
-
     @GET("exam")
     fun getExamList(): Call<List<Exam>>
 
@@ -22,7 +21,6 @@ interface ExamService {
 
     @PUT("exam/{id}")
     fun updateExam(@Path("id") id: Long, @Body exam: Exam): Call<Exam>
-
 
 
     @DELETE("exam/{id}")
