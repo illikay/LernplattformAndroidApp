@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ExamCreateActivity : AppCompatActivity() {
-    //Kommentar
+
     private lateinit var activityExamCreateBinding: ActivityExamCreateBinding
 
     @SuppressLint("WeekBasedYear")

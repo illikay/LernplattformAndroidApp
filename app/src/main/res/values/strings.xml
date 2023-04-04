@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Lernplattform</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="sign_in_button_label">Sign In</string>
+    <string name="sign_in_error_message">Invalid username or password. Please try again.</string>
+    <string name="register_button_label">Register User</string>
 </resources>
