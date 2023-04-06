@@ -1,6 +1,7 @@
 package com.kayikci.lernplattform2.services
 
 import android.os.Build
+import com.kayikci.lernplattform2.activities.WelcomeActivity
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -28,11 +29,14 @@ object ServiceBuilder {
         request = request.newBuilder()
             .addHeader("x-device-type", Build.DEVICE)
             .addHeader("Accept-Language", Locale.getDefault().language)
+            .addHeader("Authorization", "Bearer ${WelcomeActivity.globalToken}" )
             .build()
 
         val response = chain.proceed(request)
         response
     }
+
+
 
     // Create OkHttp Client
     private val okHttp = OkHttpClient.Builder()

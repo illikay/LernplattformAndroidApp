@@ -35,7 +35,13 @@
                 android:name="com.kayikci.lernplattform2.activities.ExamListActivity"
                 android:exported="true"
                 android:label="Prüfungsliste"
-                android:theme="@style/AppTheme.NoActionBar" />
+                android:parentActivityName="com.kayikci.lernplattform2.activities.WelcomeActivity"
+                android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kayikci.lernplattform2.activities.WelcomeActivity"/>
+        </activity>
+
         <activity
                 android:name="com.kayikci.lernplattform2.activities.ExamDetailActivity"
                 android:exported="true"

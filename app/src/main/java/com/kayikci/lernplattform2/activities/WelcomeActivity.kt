@@ -21,13 +21,16 @@ class WelcomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val context = this
+
+
+
         activityWelcomeBinding = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(activityWelcomeBinding.root)
 
         activityWelcomeBinding.button.setOnClickListener {
             val intent = Intent(this, ExamListActivity::class.java)
             startActivity(intent)
-            finish()
+            //finish()
         }
 
         activityWelcomeBinding.signInButton.setOnClickListener {
@@ -44,8 +47,8 @@ class WelcomeActivity : AppCompatActivity() {
 
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     if (response.isSuccessful) {
-                        val token = response.body()?.token
-                        System.out.println("this is the token: " + token);
+                        globalToken = response.body()?.token
+                        System.out.println("this is the token: " + globalToken);
                         Toast.makeText(context, "Successfully logged in", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show()
@@ -57,6 +60,9 @@ class WelcomeActivity : AppCompatActivity() {
                 }
             })
         }
+    }
+    companion object {
+        var globalToken: String? = ""
     }
 }
 

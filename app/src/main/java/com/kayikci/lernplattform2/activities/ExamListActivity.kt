@@ -2,6 +2,7 @@ package com.kayikci.lernplattform2.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
 
@@ -28,8 +29,13 @@ class ExamListActivity : AppCompatActivity() {
         activityExamListBinding = ActivityExamListBinding.inflate(layoutInflater)
         setContentView(activityExamListBinding.root)
 
-        setSupportActionBar(activityExamListBinding.toolbar)
-        activityExamListBinding.toolbar.title = title
+        setSupportActionBar(activityExamListBinding.detailToolbar)
+
+        // Show the Up button in the action bar.
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        //setSupportActionBar(activityExamListBinding.toolbar)
+        //activityExamListBinding.toolbar.title = title
 
         activityExamListBinding.fab.setOnClickListener {
             val intent = Intent(this@ExamListActivity, ExamCreateActivity::class.java)
@@ -37,6 +43,8 @@ class ExamListActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
+
 
     override fun onResume() {
         super.onResume()
@@ -82,6 +90,16 @@ class ExamListActivity : AppCompatActivity() {
                 Toast.makeText(this@ExamListActivity, "Error Occurred $t", Toast.LENGTH_LONG).show()
             }
         })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
 
