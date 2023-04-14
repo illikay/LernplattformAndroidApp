@@ -10,6 +10,6 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 interface AuthService {
-    @POST("user/authenticate")
+    @POST("usermanagement/authenticate")
     fun authenticate(@Body loginRequest: LoginRequest): Call<LoginResponse>
 }

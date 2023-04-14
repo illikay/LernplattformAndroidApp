@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.kayikci.lernplattform2.databinding.ActivityWelcomeBinding
+import com.kayikci.lernplattform2.helpers.ExamAdapter
 import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.models.LoginRequest
 import com.kayikci.lernplattform2.models.LoginResponse
@@ -28,9 +29,12 @@ class WelcomeActivity : AppCompatActivity() {
         setContentView(activityWelcomeBinding.root)
 
         activityWelcomeBinding.button.setOnClickListener {
+
+
+
             val intent = Intent(this, ExamListActivity::class.java)
             startActivity(intent)
-            //finish()
+
         }
 
         activityWelcomeBinding.signInButton.setOnClickListener {
@@ -38,6 +42,8 @@ class WelcomeActivity : AppCompatActivity() {
 
             val email = activityWelcomeBinding.usernameEditText.text.toString()
             val password = activityWelcomeBinding.passwordEditText.text.toString()
+
+
 
             val loginRequest = LoginRequest(email, password)
 
@@ -48,7 +54,7 @@ class WelcomeActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     if (response.isSuccessful) {
                         globalToken = response.body()?.token
-                        System.out.println("this is the token: " + globalToken);
+                        globalUserId = response.body()?.userId
                         Toast.makeText(context, "Successfully logged in", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show()
@@ -61,8 +67,11 @@ class WelcomeActivity : AppCompatActivity() {
             })
         }
     }
+
+
     companion object {
         var globalToken: String? = ""
+        var globalUserId: Long? = 0
     }
 }
 

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
+import com.kayikci.lernplattform2.activities.WelcomeActivity.Companion.globalUserId
 
 
 import com.kayikci.lernplattform2.databinding.ActivityExamListBinding
@@ -14,6 +15,7 @@ import com.kayikci.lernplattform2.helpers.ExamAdapter
 import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.services.ExamService
 import com.kayikci.lernplattform2.services.ServiceBuilder
+import com.kayikci.lernplattform2.services.UserService
 
 
 import retrofit2.Call
@@ -54,10 +56,10 @@ class ExamListActivity : AppCompatActivity() {
 
     private fun loadDestinations() {
 
-        val examService = ServiceBuilder.buildService(ExamService::class.java)
+        val userService = ServiceBuilder.buildService(UserService::class.java)
 
 
-        val requestCall = examService.getExamList()
+        val requestCall = userService.getExamListByUser(globalUserId)
 
         requestCall.enqueue(object : Callback<List<Exam>> {
 
