@@ -54,7 +54,6 @@ class WelcomeActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     if (response.isSuccessful) {
                         globalToken = response.body()?.token
-                        globalUserId = response.body()?.userId
                         Toast.makeText(context, "Successfully logged in", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show()
@@ -71,7 +70,6 @@ class WelcomeActivity : AppCompatActivity() {
 
     companion object {
         var globalToken: String? = ""
-        var globalUserId: Long? = 0
     }
 }
 
