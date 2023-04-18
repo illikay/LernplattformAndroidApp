@@ -12,4 +12,7 @@ import retrofit2.http.POST
 interface AuthService {
     @POST("usermanagement/authenticate")
     fun authenticate(@Body loginRequest: LoginRequest): Call<LoginResponse>
+
+    @POST("usermanagement/logout")
+    fun logout(@Body loginRequest: LoginRequest): Call<Unit>
 }

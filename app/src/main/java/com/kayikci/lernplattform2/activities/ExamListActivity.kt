@@ -2,10 +2,12 @@ package com.kayikci.lernplattform2.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
-
+import com.kayikci.lernplattform2.R
 
 
 import com.kayikci.lernplattform2.databinding.ActivityExamListBinding
@@ -27,6 +29,7 @@ class ExamListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         activityExamListBinding = ActivityExamListBinding.inflate(layoutInflater)
         setContentView(activityExamListBinding.root)
 
@@ -99,8 +102,21 @@ class ExamListActivity : AppCompatActivity() {
                 finish()
                 true
             }
+            R.id.menu_logout -> {
+                val intent = Intent(this@ExamListActivity, WelcomeActivity::class.java)
+                finish()
+                startActivity(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.my_menu, menu)
+        return true
     }
 }
 

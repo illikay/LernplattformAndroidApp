@@ -28,14 +28,7 @@ class WelcomeActivity : AppCompatActivity() {
         activityWelcomeBinding = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(activityWelcomeBinding.root)
 
-        activityWelcomeBinding.button.setOnClickListener {
 
-
-
-            val intent = Intent(this, ExamListActivity::class.java)
-            startActivity(intent)
-
-        }
 
         activityWelcomeBinding.signInButton.setOnClickListener {
             val authenticationService = ServiceBuilder.buildService(AuthService::class.java)
@@ -55,6 +48,8 @@ class WelcomeActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         globalToken = response.body()?.token
                         Toast.makeText(context, "Successfully logged in", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this@WelcomeActivity, ExamListActivity::class.java)
+                        startActivity(intent)
                     } else {
                         Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show()
                     }
@@ -65,6 +60,7 @@ class WelcomeActivity : AppCompatActivity() {
                 }
             })
         }
+
     }
 
 
