@@ -9,6 +9,10 @@ import com.kayikci.lernplattform2.databinding.ActivityExamCreateBinding
 import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.services.ExamService
 import com.kayikci.lernplattform2.services.ServiceBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 import retrofit2.Call
 import retrofit2.Callback
@@ -16,7 +20,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ExamCreateActivity : AppCompatActivity() {
+class ExamCreateActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private lateinit var activityExamCreateBinding: ActivityExamCreateBinding
 
@@ -33,6 +37,7 @@ class ExamCreateActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         activityExamCreateBinding.btnAdd.setOnClickListener {
+
             val newExam = Exam()
             newExam.pruefungsName = activityExamCreateBinding.etName.text.toString()
             newExam.info = activityExamCreateBinding.etInfo.text.toString()
@@ -63,6 +68,7 @@ class ExamCreateActivity : AppCompatActivity() {
                     Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
                 }
             })
+
         }
     }
 }
