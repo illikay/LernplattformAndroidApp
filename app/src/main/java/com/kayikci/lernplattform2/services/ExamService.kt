@@ -1,7 +1,7 @@
 package com.kayikci.lernplattform2.services
 
 import com.kayikci.lernplattform2.models.Exam
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.*
 import java.util.*
 
@@ -10,21 +10,21 @@ interface ExamService {
 
 
     @GET("exam")
-    fun getExamListByUser(): Call<List<Exam>>
+    suspend fun getExamListByUser(): Response<List<Exam>>
 
     @POST("exam")
-    fun addExam(@Body newExam: Exam): Call<Exam>
+    suspend fun addExam(@Body newExam: Exam): Response<Exam>
 
     @GET("exam/{id}")
-    fun getExam(@Path("id") id: Long): Call<Exam>
+    suspend fun getExam(@Path("id") id: Long): Response<Exam>
 
 
     @PUT("exam/{id}")
-    fun updateExam(@Path("id") id: Long, @Body exam: Exam): Call<Exam>
+    suspend fun updateExam(@Path("id") id: Long, @Body exam: Exam): Response<Exam>
 
 
     @DELETE("exam/{id}")
-    fun deleteExam(@Path("id") id: Long): Call<Unit>
+    suspend fun deleteExam(@Path("id") id: Long): Response<Unit>
 }
 
 

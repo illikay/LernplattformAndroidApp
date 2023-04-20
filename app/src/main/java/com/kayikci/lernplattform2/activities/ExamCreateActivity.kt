@@ -4,23 +4,16 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-
+import androidx.lifecycle.lifecycleScope
 import com.kayikci.lernplattform2.databinding.ActivityExamCreateBinding
 import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.services.ExamService
 import com.kayikci.lernplattform2.services.ServiceBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ExamCreateActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+class ExamCreateActivity : AppCompatActivity() {
 
     private lateinit var activityExamCreateBinding: ActivityExamCreateBinding
 
@@ -49,25 +42,23 @@ class ExamCreateActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             newExam.aenderungsDatum = dateString
             newExam.anzahlFragen = 5
 
+            lifecycleScope.launch {
+                val examService = ServiceBuilder.buildService(ExamService::class.java)
 
-            val examService = ServiceBuilder.buildService(ExamService::class.java)
-            val requestCall = examService.addExam(newExam)
-
-            requestCall.enqueue(object : Callback<Exam> {
-
-                override fun onResponse(call: Call<Exam>, response: Response<Exam>) {
+                try {
+                    val response = examService.addExam(newExam)
                     if (response.isSuccessful) {
                         finish() // Move back to DestinationListActivity
                         Toast.makeText(context, "Successfully Added", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
                     }
-                }
-
-                override fun onFailure(call: Call<Exam>, t: Throwable) {
+                } catch (e: Exception) {
                     Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
                 }
-            })
+
+
+            }
 
         }
     }

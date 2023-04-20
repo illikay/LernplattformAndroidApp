@@ -2,17 +2,16 @@ package com.kayikci.lernplattform2.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.kayikci.lernplattform2.databinding.ActivityQuestionDetailBinding
 import com.kayikci.lernplattform2.models.Question
 import com.kayikci.lernplattform2.services.QuestionService
 import com.kayikci.lernplattform2.services.ServiceBuilder
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -45,13 +44,13 @@ class QuestionDetailActivity : AppCompatActivity() {
 
     private fun loadDetails(questionId: Long, examId: Long) {
 
-        val questionService = ServiceBuilder.buildService(QuestionService::class.java)
-        val requestCall = questionService.getQuestion(examId, questionId)
+        lifecycleScope.launch {
 
-        requestCall.enqueue(object : Callback<Question> {
+            val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
-            override fun onResponse(call: Call<Question>, response: Response<Question>) {
 
+            try {
+                val response = questionService.getQuestion(examId, questionId)
                 if (response.isSuccessful) {
                     val question = response.body()
                     question?.let {
@@ -67,19 +66,18 @@ class QuestionDetailActivity : AppCompatActivity() {
                         this@QuestionDetailActivity,
                         "Failed to retrieve details",
                         Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    ).show()
                 }
-            }
-
-            override fun onFailure(call: Call<Question>, t: Throwable) {
+            } catch (e: Exception) {
                 Toast.makeText(
                     this@QuestionDetailActivity,
-                    "Failed to retrieve details $t",
+                    "Failed to retrieve details",
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        })
+
+
+        }
     }
 
     @SuppressLint("WeekBasedYear")
@@ -99,12 +97,12 @@ class QuestionDetailActivity : AppCompatActivity() {
             newQuestion.aenderungsDatum = dateString
             newQuestion.isBeantwortet = true
 
-            val questionService = ServiceBuilder.buildService(QuestionService::class.java)
-            val requestCall = questionService.updateQuestion(examId, questionId, newQuestion)
+            lifecycleScope.launch {
 
-            requestCall.enqueue(object : Callback<Question> {
+                val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
-                override fun onResponse(call: Call<Question>, response: Response<Question>) {
+                try {
+                    val response = questionService.updateQuestion(examId, questionId, newQuestion)
                     if (response.isSuccessful) {
                         finish() // Move back to DestinationListActivity
                         Toast.makeText(
@@ -117,15 +115,15 @@ class QuestionDetailActivity : AppCompatActivity() {
                             "Failed to update item", Toast.LENGTH_SHORT
                         ).show()
                     }
-                }
-
-                override fun onFailure(call: Call<Question>, t: Throwable) {
+                } catch (e: Exception) {
                     Toast.makeText(
                         this@QuestionDetailActivity,
                         "Failed to update item", Toast.LENGTH_SHORT
                     ).show()
                 }
-            })
+
+            }
+
         }
     }
 
@@ -133,12 +131,12 @@ class QuestionDetailActivity : AppCompatActivity() {
 
         activityQuestionDetailBinding.btnDelete.setOnClickListener {
 
-            val questionService = ServiceBuilder.buildService(QuestionService::class.java)
-            val requestCall = questionService.deleteQuestion(examId, questionId)
+            lifecycleScope.launch {
+                val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
-            requestCall.enqueue(object : Callback<Unit> {
 
-                override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                try {
+                    val response = questionService.deleteQuestion(examId, questionId)
                     if (response.isSuccessful) {
                         finish() // Move back to DestinationListActivity
                         Toast.makeText(
@@ -153,16 +151,15 @@ class QuestionDetailActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                }
-
-                override fun onFailure(call: Call<Unit>, t: Throwable) {
+                } catch (e: Exception) {
                     Toast.makeText(
                         this@QuestionDetailActivity,
                         "Failed to Delete",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            })
+
+            }
         }
     }
 

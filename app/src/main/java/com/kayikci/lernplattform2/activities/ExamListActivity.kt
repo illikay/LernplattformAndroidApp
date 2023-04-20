@@ -1,27 +1,20 @@
 package com.kayikci.lernplattform2.activities
 
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.kayikci.lernplattform2.R
-
-
 import com.kayikci.lernplattform2.databinding.ActivityExamListBinding
 import com.kayikci.lernplattform2.helpers.ExamAdapter
-
-
-import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.services.ExamService
 import com.kayikci.lernplattform2.services.ServiceBuilder
-
-
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.launch
 
 class ExamListActivity : AppCompatActivity() {
 
@@ -58,20 +51,18 @@ class ExamListActivity : AppCompatActivity() {
 
     private fun loadDestinations() {
 
-        val examService = ServiceBuilder.buildService(ExamService::class.java)
+        lifecycleScope.launch {
+
+            val examService = ServiceBuilder.buildService(ExamService::class.java)
 
 
-        val requestCall = examService.getExamListByUser()
-
-        requestCall.enqueue(object : Callback<List<Exam>> {
-
-            // If you receive a HTTP Response, then this method is executed
-            // Your STATUS Code will decide if your Http Response is a Success or Error
-            override fun onResponse(call: Call<List<Exam>>, response: Response<List<Exam>>) {
+            try {
+                val response = examService.getExamListByUser()
                 if (response.isSuccessful) {
                     // Your status code is in the range of 200's
                     val destinationList = response.body()!!
-                    activityExamListBinding.examRecyclerView.adapter = ExamAdapter(destinationList)
+                    activityExamListBinding.examRecyclerView.adapter =
+                        ExamAdapter(destinationList)
                 } else if (response.code() == 401) {
                     Toast.makeText(
                         this@ExamListActivity,
@@ -85,15 +76,12 @@ class ExamListActivity : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            } catch (e: Exception) {
+                println(e.toString())
+                Toast.makeText(this@ExamListActivity, "Error Occurred $e", Toast.LENGTH_LONG)
+                    .show()
             }
-
-            // Invoked in case of Network Error or Establishing connection with Server
-            // or Error Creating Http Request or Error Processing Http Response
-            override fun onFailure(call: Call<List<Exam>>, t: Throwable) {
-                println(t.toString())
-                Toast.makeText(this@ExamListActivity, "Error Occurred $t", Toast.LENGTH_LONG).show()
-            }
-        })
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

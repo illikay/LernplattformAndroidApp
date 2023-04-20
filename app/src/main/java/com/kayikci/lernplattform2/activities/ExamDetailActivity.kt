@@ -8,26 +8,20 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kayikci.lernplattform2.databinding.ActivityExamDetailBinding
 import com.kayikci.lernplattform2.helpers.QuestionAdapter
 import com.kayikci.lernplattform2.models.Exam
-import com.kayikci.lernplattform2.models.Question
 import com.kayikci.lernplattform2.services.ExamService
 import com.kayikci.lernplattform2.services.QuestionService
 import com.kayikci.lernplattform2.services.ServiceBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ExamDetailActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+class ExamDetailActivity : AppCompatActivity() {
 
     private lateinit var activityExamDetailBinding: ActivityExamDetailBinding
 
@@ -85,13 +79,13 @@ class ExamDetailActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private fun loadDetails(id: Long) {
 
-        val examService = ServiceBuilder.buildService(ExamService::class.java)
-        val requestCall = examService.getExam(id)
+        lifecycleScope.launch {
 
-        requestCall.enqueue(object : Callback<Exam> {
+            val examService = ServiceBuilder.buildService(ExamService::class.java)
 
-            override fun onResponse(call: Call<Exam>, response: Response<Exam>) {
 
+            try {
+                val response = examService.getExam(id)
                 if (response.isSuccessful) {
                     val exam = response.body()
                     exam?.let {
@@ -101,67 +95,70 @@ class ExamDetailActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
                         activityExamDetailBinding.collapsingToolbar.title = exam.pruefungsName
                     }
+
                 } else {
                     Toast.makeText(
-                        this@ExamDetailActivity, "Failed to retrieve details", Toast.LENGTH_SHORT
+                        this@ExamDetailActivity,
+                        "Failed to retrieve details",
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
-            }
-
-            override fun onFailure(call: Call<Exam>, t: Throwable) {
+            } catch (e: Exception) {
                 Toast.makeText(
-                    this@ExamDetailActivity, "Failed to retrieve details $t", Toast.LENGTH_SHORT
+                    this@ExamDetailActivity,
+                    "Failed to retrieve details",
+                    Toast.LENGTH_SHORT
                 ).show()
             }
-        })
+
+        }
     }
 
     @SuppressLint("WeekBasedYear")
     private fun initUpdateButton(id: Long) {
 
         activityExamDetailBinding.btnUpdate.setOnClickListener {
-            launch(Dispatchers.Main) {
-                val newExam = Exam()
 
-                newExam.pruefungsName = activityExamDetailBinding.etName.text.toString()
-                newExam.info = activityExamDetailBinding.etInfo.text.toString()
-                newExam.beschreibung = activityExamDetailBinding.etBeschreibung.text.toString()
+            val newExam = Exam()
 
-                val format = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.GERMANY)
-                val dateString: String = format.format(Date())
-                newExam.erstellDatum = dateString
-                newExam.aenderungsDatum = dateString
-                newExam.anzahlFragen = 3
+            newExam.pruefungsName = activityExamDetailBinding.etName.text.toString()
+            newExam.info = activityExamDetailBinding.etInfo.text.toString()
+            newExam.beschreibung = activityExamDetailBinding.etBeschreibung.text.toString()
+
+            val format = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.GERMANY)
+            val dateString: String = format.format(Date())
+            newExam.erstellDatum = dateString
+            newExam.aenderungsDatum = dateString
+            newExam.anzahlFragen = 3
+
+            lifecycleScope.launch {
 
                 val examService = ServiceBuilder.buildService(ExamService::class.java)
-                val requestCall = examService.updateExam(id, newExam)
 
 
+                try {
+                    val response = examService.updateExam(id, newExam)
+                    if (response.isSuccessful) {
+                        finish() // Move back to DestinationListActivity
+                        Toast.makeText(
+                            this@ExamDetailActivity,
+                            "Item Updated Successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
-                requestCall.enqueue(object : Callback<Exam> {
-
-                    override fun onResponse(call: Call<Exam>, response: Response<Exam>) {
-                        if (response.isSuccessful) {
-                            finish() // Move back to DestinationListActivity
-                            Toast.makeText(
-                                this@ExamDetailActivity,
-                                "Item Updated Successfully",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            Toast.makeText(
-                                this@ExamDetailActivity, "Failed to update item", Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-
-                    override fun onFailure(call: Call<Exam>, t: Throwable) {
+                    } else {
                         Toast.makeText(
                             this@ExamDetailActivity, "Failed to update item", Toast.LENGTH_SHORT
                         ).show()
                     }
-                })
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this@ExamDetailActivity, "Failed to update item", Toast.LENGTH_SHORT
+                    ).show()
+                }
+
             }
+
         }
     }
 
@@ -169,31 +166,30 @@ class ExamDetailActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
         activityExamDetailBinding.btnDelete.setOnClickListener {
 
+            lifecycleScope.launch {
+                val examService = ServiceBuilder.buildService(ExamService::class.java)
 
-            val examService = ServiceBuilder.buildService(ExamService::class.java)
-            val requestCall = examService.deleteExam(id)
 
-            requestCall.enqueue(object : Callback<Unit> {
-
-                override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                try {
+                    val response = examService.deleteExam(id)
                     if (response.isSuccessful) {
                         finish() // Move back to DestinationListActivity
                         Toast.makeText(
                             this@ExamDetailActivity, "Successfully Deleted", Toast.LENGTH_SHORT
                         ).show()
+
                     } else {
                         Toast.makeText(
                             this@ExamDetailActivity, "Failed to Delete", Toast.LENGTH_SHORT
                         ).show()
                     }
-                }
-
-                override fun onFailure(call: Call<Unit>, t: Throwable) {
+                } catch (e: Exception) {
                     Toast.makeText(
                         this@ExamDetailActivity, "Failed to Delete", Toast.LENGTH_SHORT
                     ).show()
                 }
-            })
+
+            }
 
         }
     }
@@ -218,28 +214,17 @@ class ExamDetailActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private fun loadQuestions(id: Long) {
 
+        lifecycleScope.launch {
 
-        val questionService = ServiceBuilder.buildService(QuestionService::class.java)
+            val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
-
-        val requestCall = questionService.getQuestionList(id)
-
-        requestCall.enqueue(object : Callback<List<Question>> {
-
-            // If you receive a HTTP Response, then this method is executed
-            // Your STATUS Code will decide if your Http Response is a Success or Error
-            override fun onResponse(
-                call: Call<List<Question>>, response: Response<List<Question>>
-            ) {
+            try {
+                val response = questionService.getQuestionList(id)
                 if (response.isSuccessful) {
-                    // Your status code is in the range of 200's
                     val questionList = response.body()!!
-
                     val adapter = QuestionAdapter(questionList, id)
 
-
                     activityExamDetailBinding.questionRecyclerView.adapter = adapter
-
 
                 } else if (response.code() == 401) {
                     Toast.makeText(
@@ -253,16 +238,12 @@ class ExamDetailActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                         this@ExamDetailActivity, "Failed to retrieve items", Toast.LENGTH_LONG
                     ).show()
                 }
-            }
-
-            // Invoked in case of Network Error or Establishing connection with Server
-            // or Error Creating Http Request or Error Processing Http Response
-            override fun onFailure(call: Call<List<Question>>, t: Throwable) {
-                println(t.toString())
-                Toast.makeText(this@ExamDetailActivity, "Error Occurred $t", Toast.LENGTH_LONG)
+            } catch (e: Exception) {
+                Toast.makeText(this@ExamDetailActivity, "Error Occurred $e", Toast.LENGTH_LONG)
                     .show()
             }
-        })
+
+        }
 
     }
 

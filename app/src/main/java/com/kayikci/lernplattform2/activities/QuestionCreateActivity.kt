@@ -5,14 +5,13 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.kayikci.lernplattform2.databinding.ActivityQuestionCreateBinding
 import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.models.Question
 import com.kayikci.lernplattform2.services.QuestionService
 import com.kayikci.lernplattform2.services.ServiceBuilder
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -63,24 +62,22 @@ class QuestionCreateActivity : AppCompatActivity() {
             newQuestion.isBeantwortet = true
             newQuestion.exam = actualExam
 
-            val questionService = ServiceBuilder.buildService(QuestionService::class.java)
-            val requestCall = questionService.addQuestion(examId, newQuestion)
+            lifecycleScope.launch {
+                val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
-            requestCall.enqueue(object : Callback<Question> {
-
-                override fun onResponse(call: Call<Question>, response: Response<Question>) {
+                try {
+                    val response = questionService.addQuestion(examId, newQuestion)
                     if (response.isSuccessful) {
                         finish() // Move back to DestinationListActivity
                         Toast.makeText(context, "Successfully Added", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
                     }
-                }
-
-                override fun onFailure(call: Call<Question>, t: Throwable) {
+                } catch (e: Exception) {
                     Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
                 }
-            })
+
+            }
         }
 
 

@@ -4,17 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.kayikci.lernplattform2.databinding.ActivityWelcomeBinding
-import com.kayikci.lernplattform2.helpers.ExamAdapter
-import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.models.LoginRequest
-import com.kayikci.lernplattform2.models.LoginResponse
 import com.kayikci.lernplattform2.services.AuthService
-import com.kayikci.lernplattform2.services.ExamService
 import com.kayikci.lernplattform2.services.ServiceBuilder
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.launch
 
 class WelcomeActivity : AppCompatActivity() {
     private lateinit var activityWelcomeBinding: ActivityWelcomeBinding
@@ -31,34 +26,36 @@ class WelcomeActivity : AppCompatActivity() {
 
 
         activityWelcomeBinding.signInButton.setOnClickListener {
-            val authenticationService = ServiceBuilder.buildService(AuthService::class.java)
+
 
             val email = activityWelcomeBinding.usernameEditText.text.toString()
             val password = activityWelcomeBinding.passwordEditText.text.toString()
 
 
-
             val loginRequest = LoginRequest(email, password)
 
-            val requestCall = authenticationService.authenticate(loginRequest)
+            lifecycleScope.launch {
 
-            requestCall.enqueue(object : Callback<LoginResponse> {
+                val authenticationService = ServiceBuilder.buildService(AuthService::class.java)
 
-                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+
+
+                try {
+                    val response = authenticationService.authenticate(loginRequest)
                     if (response.isSuccessful) {
                         globalToken = response.body()?.token
-                        Toast.makeText(context, "Successfully logged in", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Successfully logged in", Toast.LENGTH_SHORT)
+                            .show()
                         val intent = Intent(this@WelcomeActivity, ExamListActivity::class.java)
                         startActivity(intent)
                     } else {
                         Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show()
                     }
-                }
-
-                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                } catch (e: Exception) {
                     Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show()
                 }
-            })
+            }
+
         }
 
     }
