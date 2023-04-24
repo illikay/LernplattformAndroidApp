@@ -16,7 +16,9 @@ import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.services.ExamService
 import com.kayikci.lernplattform2.services.QuestionService
 import com.kayikci.lernplattform2.services.ServiceBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -79,36 +81,45 @@ class ExamDetailActivity : AppCompatActivity() {
 
     private fun loadDetails(id: Long) {
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
 
             val examService = ServiceBuilder.buildService(ExamService::class.java)
+
 
 
             try {
                 val response = examService.getExam(id)
                 if (response.isSuccessful) {
                     val exam = response.body()
-                    exam?.let {
-                        activityExamDetailBinding.etName.setText(exam.pruefungsName)
-                        activityExamDetailBinding.etInfo.setText(exam.info)
-                        activityExamDetailBinding.etBeschreibung.setText(exam.beschreibung)
+                    withContext(Dispatchers.Main) {
+                        exam?.let {
+                            activityExamDetailBinding.etName.setText(exam.pruefungsName)
+                            activityExamDetailBinding.etInfo.setText(exam.info)
+                            activityExamDetailBinding.etBeschreibung.setText(exam.beschreibung)
 
-                        activityExamDetailBinding.collapsingToolbar.title = exam.pruefungsName
+                            activityExamDetailBinding.collapsingToolbar.title = exam.pruefungsName
+                        }
                     }
 
+
+
                 } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@ExamDetailActivity,
+                            "Failed to retrieve details",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
                     Toast.makeText(
                         this@ExamDetailActivity,
                         "Failed to retrieve details",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            } catch (e: Exception) {
-                Toast.makeText(
-                    this@ExamDetailActivity,
-                    "Failed to retrieve details",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
 
         }
@@ -131,7 +142,7 @@ class ExamDetailActivity : AppCompatActivity() {
             newExam.aenderungsDatum = dateString
             newExam.anzahlFragen = 3
 
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
 
                 val examService = ServiceBuilder.buildService(ExamService::class.java)
 
@@ -139,22 +150,28 @@ class ExamDetailActivity : AppCompatActivity() {
                 try {
                     val response = examService.updateExam(id, newExam)
                     if (response.isSuccessful) {
-                        finish() // Move back to DestinationListActivity
-                        Toast.makeText(
-                            this@ExamDetailActivity,
-                            "Item Updated Successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        withContext(Dispatchers.Main) {
+                            finish() // Move back to DestinationListActivity
+                            Toast.makeText(
+                                this@ExamDetailActivity,
+                                "Item Updated Successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
                     } else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@ExamDetailActivity, "Failed to update item", Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
                         Toast.makeText(
                             this@ExamDetailActivity, "Failed to update item", Toast.LENGTH_SHORT
                         ).show()
                     }
-                } catch (e: Exception) {
-                    Toast.makeText(
-                        this@ExamDetailActivity, "Failed to update item", Toast.LENGTH_SHORT
-                    ).show()
                 }
 
             }
@@ -166,27 +183,33 @@ class ExamDetailActivity : AppCompatActivity() {
 
         activityExamDetailBinding.btnDelete.setOnClickListener {
 
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 val examService = ServiceBuilder.buildService(ExamService::class.java)
 
 
                 try {
                     val response = examService.deleteExam(id)
                     if (response.isSuccessful) {
-                        finish() // Move back to DestinationListActivity
-                        Toast.makeText(
-                            this@ExamDetailActivity, "Successfully Deleted", Toast.LENGTH_SHORT
-                        ).show()
+                        withContext(Dispatchers.Main) {
+                            finish() // Move back to DestinationListActivity
+                            Toast.makeText(
+                                this@ExamDetailActivity, "Successfully Deleted", Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
                     } else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@ExamDetailActivity, "Failed to Delete", Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
                         Toast.makeText(
                             this@ExamDetailActivity, "Failed to Delete", Toast.LENGTH_SHORT
                         ).show()
                     }
-                } catch (e: Exception) {
-                    Toast.makeText(
-                        this@ExamDetailActivity, "Failed to Delete", Toast.LENGTH_SHORT
-                    ).show()
                 }
 
             }
@@ -214,7 +237,7 @@ class ExamDetailActivity : AppCompatActivity() {
 
     private fun loadQuestions(id: Long) {
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
 
             val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
@@ -223,24 +246,35 @@ class ExamDetailActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val questionList = response.body()!!
                     val adapter = QuestionAdapter(questionList, id)
+                    withContext(Dispatchers.Main) {
 
-                    activityExamDetailBinding.questionRecyclerView.adapter = adapter
+                        activityExamDetailBinding.questionRecyclerView.adapter = adapter
+                    }
+
+
+
 
                 } else if (response.code() == 401) {
-                    Toast.makeText(
-                        this@ExamDetailActivity,
-                        "Your session has expired. Please Login again.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else { // Application-level failure
-                    // Your status code is in the range of 300's, 400's and 500's
-                    Toast.makeText(
-                        this@ExamDetailActivity, "Failed to retrieve items", Toast.LENGTH_LONG
-                    ).show()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@ExamDetailActivity,
+                            "Your session has expired. Please Login again.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {// Application-level failure
+                        // Your status code is in the range of 300's, 400's and 500's
+                        Toast.makeText(
+                            this@ExamDetailActivity, "Failed to retrieve items", Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@ExamDetailActivity, "Error Occurred $e", Toast.LENGTH_LONG)
-                    .show()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@ExamDetailActivity, "Error Occurred $e", Toast.LENGTH_LONG)
+                        .show()
+                }
             }
 
         }

@@ -9,7 +9,9 @@ import com.kayikci.lernplattform2.databinding.ActivityWelcomeBinding
 import com.kayikci.lernplattform2.models.LoginRequest
 import com.kayikci.lernplattform2.services.AuthService
 import com.kayikci.lernplattform2.services.ServiceBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WelcomeActivity : AppCompatActivity() {
     private lateinit var activityWelcomeBinding: ActivityWelcomeBinding
@@ -34,25 +36,30 @@ class WelcomeActivity : AppCompatActivity() {
 
             val loginRequest = LoginRequest(email, password)
 
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
 
                 val authenticationService = ServiceBuilder.buildService(AuthService::class.java)
-
-
 
                 try {
                     val response = authenticationService.authenticate(loginRequest)
                     if (response.isSuccessful) {
                         globalToken = response.body()?.token
-                        Toast.makeText(context, "Successfully logged in", Toast.LENGTH_SHORT)
-                            .show()
-                        val intent = Intent(this@WelcomeActivity, ExamListActivity::class.java)
-                        startActivity(intent)
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Successfully logged in", Toast.LENGTH_SHORT)
+                                .show()
+                            val intent = Intent(this@WelcomeActivity, ExamListActivity::class.java)
+                            startActivity(intent)
+                        }
+
                     } else {
-                        Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 } catch (e: Exception) {
-                    Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Failed to login", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
 

@@ -11,7 +11,9 @@ import com.kayikci.lernplattform2.databinding.ActivityQuestionDetailBinding
 import com.kayikci.lernplattform2.models.Question
 import com.kayikci.lernplattform2.services.QuestionService
 import com.kayikci.lernplattform2.services.ServiceBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,7 +46,7 @@ class QuestionDetailActivity : AppCompatActivity() {
 
     private fun loadDetails(questionId: Long, examId: Long) {
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
 
             val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
@@ -53,27 +55,36 @@ class QuestionDetailActivity : AppCompatActivity() {
                 val response = questionService.getQuestion(examId, questionId)
                 if (response.isSuccessful) {
                     val question = response.body()
-                    question?.let {
-                        activityQuestionDetailBinding.etFragestellung.setText(question.questionFrage)
-                        activityQuestionDetailBinding.etHinweis.setText(question.questionHinweis)
-                        activityQuestionDetailBinding.etLoesung.setText(question.questionLoesung)
+                    withContext(Dispatchers.Main) {
 
-                        activityQuestionDetailBinding.questionCollapsingToolbar.title =
-                            question.questionFrage
+                        question?.let {
+                            activityQuestionDetailBinding.etFragestellung.setText(question.questionFrage)
+                            activityQuestionDetailBinding.etHinweis.setText(question.questionHinweis)
+                            activityQuestionDetailBinding.etLoesung.setText(question.questionLoesung)
+
+                            activityQuestionDetailBinding.questionCollapsingToolbar.title =
+                                question.questionFrage
+                        }
                     }
+
+
                 } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@QuestionDetailActivity,
+                            "Failed to retrieve details",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
                     Toast.makeText(
                         this@QuestionDetailActivity,
                         "Failed to retrieve details",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            } catch (e: Exception) {
-                Toast.makeText(
-                    this@QuestionDetailActivity,
-                    "Failed to retrieve details",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
 
 
@@ -97,29 +108,35 @@ class QuestionDetailActivity : AppCompatActivity() {
             newQuestion.aenderungsDatum = dateString
             newQuestion.isBeantwortet = true
 
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
 
                 val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
                 try {
                     val response = questionService.updateQuestion(examId, questionId, newQuestion)
                     if (response.isSuccessful) {
-                        finish() // Move back to DestinationListActivity
-                        Toast.makeText(
-                            this@QuestionDetailActivity,
-                            "Item Updated Successfully", Toast.LENGTH_SHORT
-                        ).show()
+                        withContext(Dispatchers.Main) {
+                            finish() // Move back to DestinationListActivity
+                            Toast.makeText(
+                                this@QuestionDetailActivity,
+                                "Item Updated Successfully", Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     } else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@QuestionDetailActivity,
+                                "Failed to update item", Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
                         Toast.makeText(
                             this@QuestionDetailActivity,
                             "Failed to update item", Toast.LENGTH_SHORT
                         ).show()
                     }
-                } catch (e: Exception) {
-                    Toast.makeText(
-                        this@QuestionDetailActivity,
-                        "Failed to update item", Toast.LENGTH_SHORT
-                    ).show()
                 }
 
             }
@@ -131,32 +148,38 @@ class QuestionDetailActivity : AppCompatActivity() {
 
         activityQuestionDetailBinding.btnDelete.setOnClickListener {
 
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
 
                 try {
                     val response = questionService.deleteQuestion(examId, questionId)
                     if (response.isSuccessful) {
-                        finish() // Move back to DestinationListActivity
-                        Toast.makeText(
-                            this@QuestionDetailActivity,
-                            "Successfully Deleted",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        withContext(Dispatchers.Main) {
+                            finish() // Move back to DestinationListActivity
+                            Toast.makeText(
+                                this@QuestionDetailActivity,
+                                "Successfully Deleted",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     } else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@QuestionDetailActivity,
+                                "Failed to Delete",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
                         Toast.makeText(
                             this@QuestionDetailActivity,
                             "Failed to Delete",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                } catch (e: Exception) {
-                    Toast.makeText(
-                        this@QuestionDetailActivity,
-                        "Failed to Delete",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
 
             }

@@ -14,7 +14,9 @@ import com.kayikci.lernplattform2.databinding.ActivityExamListBinding
 import com.kayikci.lernplattform2.helpers.ExamAdapter
 import com.kayikci.lernplattform2.services.ExamService
 import com.kayikci.lernplattform2.services.ServiceBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ExamListActivity : AppCompatActivity() {
 
@@ -51,7 +53,7 @@ class ExamListActivity : AppCompatActivity() {
 
     private fun loadDestinations() {
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
 
             val examService = ServiceBuilder.buildService(ExamService::class.java)
 
@@ -61,25 +63,34 @@ class ExamListActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     // Your status code is in the range of 200's
                     val destinationList = response.body()!!
-                    activityExamListBinding.examRecyclerView.adapter =
-                        ExamAdapter(destinationList)
+                    withContext(Dispatchers.Main) {
+
+                        activityExamListBinding.examRecyclerView.adapter =
+                            ExamAdapter(destinationList)
+                    }
+
                 } else if (response.code() == 401) {
-                    Toast.makeText(
-                        this@ExamListActivity,
-                        "Your session has expired. Please Login again.", Toast.LENGTH_LONG
-                    ).show()
-                } else { // Application-level failure
-                    // Your status code is in the range of 300's, 400's and 500's
-                    Toast.makeText(
-                        this@ExamListActivity,
-                        "Failed to retrieve items",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@ExamListActivity,
+                            "Your session has expired. Please Login again.", Toast.LENGTH_LONG
+                        ).show()
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@ExamListActivity,
+                            "Failed to retrieve items",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             } catch (e: Exception) {
-                println(e.toString())
-                Toast.makeText(this@ExamListActivity, "Error Occurred $e", Toast.LENGTH_LONG)
-                    .show()
+                withContext(Dispatchers.Main) {
+                    println(e.toString())
+                    Toast.makeText(this@ExamListActivity, "Error Occurred $e", Toast.LENGTH_LONG)
+                        .show()
+                }
             }
         }
     }

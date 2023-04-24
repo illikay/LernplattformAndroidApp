@@ -11,7 +11,9 @@ import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.models.Question
 import com.kayikci.lernplattform2.services.QuestionService
 import com.kayikci.lernplattform2.services.ServiceBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -62,19 +64,25 @@ class QuestionCreateActivity : AppCompatActivity() {
             newQuestion.isBeantwortet = true
             newQuestion.exam = actualExam
 
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
                 try {
                     val response = questionService.addQuestion(examId, newQuestion)
                     if (response.isSuccessful) {
-                        finish() // Move back to DestinationListActivity
-                        Toast.makeText(context, "Successfully Added", Toast.LENGTH_SHORT).show()
+                        withContext(Dispatchers.Main) {
+                            finish() // Move back to DestinationListActivity
+                            Toast.makeText(context, "Successfully Added", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
-                        Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 } catch (e: Exception) {
-                    Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
             }

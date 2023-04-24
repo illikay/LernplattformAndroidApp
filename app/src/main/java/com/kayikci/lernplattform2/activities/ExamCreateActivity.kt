@@ -9,7 +9,9 @@ import com.kayikci.lernplattform2.databinding.ActivityExamCreateBinding
 import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.services.ExamService
 import com.kayikci.lernplattform2.services.ServiceBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,19 +44,29 @@ class ExamCreateActivity : AppCompatActivity() {
             newExam.aenderungsDatum = dateString
             newExam.anzahlFragen = 5
 
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 val examService = ServiceBuilder.buildService(ExamService::class.java)
 
                 try {
                     val response = examService.addExam(newExam)
                     if (response.isSuccessful) {
-                        finish() // Move back to DestinationListActivity
-                        Toast.makeText(context, "Successfully Added", Toast.LENGTH_SHORT).show()
+                        withContext(Dispatchers.Main) {
+                            finish() // Move back to DestinationListActivity
+                            Toast.makeText(context, "Successfully Added", Toast.LENGTH_SHORT).show()
+                        }
+
                     } else {
-                        Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
+                        withContext(Dispatchers.Main) {
+                            finish() // Move back to DestinationListActivity
+                            Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
+                        }
+
                     }
                 } catch (e: Exception) {
-                    Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Failed to add item", Toast.LENGTH_SHORT).show()
+                    }
+
                 }
 
 
