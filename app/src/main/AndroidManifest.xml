@@ -12,58 +12,67 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
-                android:name="com.kayikci.lernplattform2.activities.QuestionDetailActivity"
+                android:name=".activities.RegisterUserActivity"
+                android:exported="false"
+                android:label="@string/title_activity_register_user"
+                android:theme="@style/AppTheme" />
+        <activity
+                android:name=".activities.UserRegisterActivity"
+                android:exported="false"
+                android:label="@string/title_activity_user_register"
+                android:theme="@style/AppTheme" />
+        <activity
+                android:name=".activities.QuestionDetailActivity"
                 android:exported="true"
                 android:label="Question Detailansicht"
-                android:theme="@style/AppTheme.NoActionBar"
-                android:parentActivityName="com.kayikci.lernplattform2.activities.ExamDetailActivity">
+                android:parentActivityName=".activities.ExamDetailActivity"
+                android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.kayikci.lernplattform2.activities.ExamDetailActivity" />
         </activity>
         <activity
-                android:name="com.kayikci.lernplattform2.activities.QuestionCreateActivity"
+                android:name=".activities.QuestionCreateActivity"
                 android:exported="true"
                 android:label="Frage Detailansicht"
-                android:parentActivityName="com.kayikci.lernplattform2.activities.ExamDetailActivity"
+                android:parentActivityName=".activities.ExamDetailActivity"
                 android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.kayikci.lernplattform2.activities.ExamDetailActivity" />
         </activity>
         <activity
-                android:name="com.kayikci.lernplattform2.activities.ExamListActivity"
+                android:name=".activities.ExamListActivity"
                 android:exported="true"
                 android:label="Prüfungsliste"
-                android:parentActivityName="com.kayikci.lernplattform2.activities.WelcomeActivity"
+                android:parentActivityName=".activities.WelcomeActivity"
                 android:theme="@style/AppTheme.NoActionBar">
             <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.kayikci.lernplattform2.activities.WelcomeActivity"/>
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.kayikci.lernplattform2.activities.WelcomeActivity" />
         </activity>
-
         <activity
-                android:name="com.kayikci.lernplattform2.activities.ExamDetailActivity"
+                android:name=".activities.ExamDetailActivity"
                 android:exported="true"
                 android:label="Prüfung Detailansicht"
-                android:parentActivityName="com.kayikci.lernplattform2.activities.ExamListActivity"
+                android:parentActivityName=".activities.ExamListActivity"
                 android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.kayikci.lernplattform2.activities.ExamListActivity" />
         </activity>
         <activity
-                android:name="com.kayikci.lernplattform2.activities.ExamCreateActivity"
+                android:name=".activities.ExamCreateActivity"
                 android:exported="true"
                 android:label="Neue Prüfung"
-                android:parentActivityName="com.kayikci.lernplattform2.activities.ExamListActivity"
+                android:parentActivityName=".activities.ExamListActivity"
                 android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.kayikci.lernplattform2.activities.ExamListActivity" />
         </activity>
         <activity
-                android:name="com.kayikci.lernplattform2.activities.WelcomeActivity"
+                android:name=".activities.WelcomeActivity"
                 android:exported="true"
                 android:label="Lernplattform"
                 android:theme="@style/AppTheme.NoActionBar">

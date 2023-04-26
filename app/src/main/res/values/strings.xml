@@ -2,7 +2,12 @@
     <string name="app_name">Lernplattform</string>
     <string name="username_hint">Username</string>
     <string name="password_hint">Password</string>
+    <string name="email_hint">E-Mail</string>
     <string name="sign_in_button_label">Sign In</string>
     <string name="sign_in_error_message">Invalid username or password. Please try again.</string>
     <string name="register_button_label">Register User</string>
+    <string name="title_activity_user_register">UserRegisterActivity</string>
+    <string name="title_activity_register_user">RegisterUserActivity</string>
+    <string name="register_button_text">Benutzer registrieren</string>
+    <string name="register_title">Registrieren eines Benutzers</string>
 </resources>

@@ -26,6 +26,13 @@ class WelcomeActivity : AppCompatActivity() {
         setContentView(activityWelcomeBinding.root)
 
 
+        activityWelcomeBinding.registerButton.setOnClickListener {
+            val intent = Intent(this@WelcomeActivity, UserRegisterActivity::class.java)
+            startActivity(intent)
+
+        }
+
+
 
         activityWelcomeBinding.signInButton.setOnClickListener {
 
