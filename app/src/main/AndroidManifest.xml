@@ -11,16 +11,17 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity
-                android:name=".activities.RegisterUserActivity"
-                android:exported="false"
-                android:label="@string/title_activity_register_user"
-                android:theme="@style/AppTheme" />
+
         <activity
                 android:name=".activities.UserRegisterActivity"
-                android:exported="false"
-                android:label="@string/title_activity_user_register"
-                android:theme="@style/AppTheme" />
+                android:exported="true"
+                android:label="Benutzer registrieren"
+                android:parentActivityName=".activities.WelcomeActivity"
+                android:theme="@style/AppTheme.NoActionBar" >
+        <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kayikci.lernplattform2.activities.WelcomeActivity" />
+        </activity>
         <activity
                 android:name=".activities.QuestionDetailActivity"
                 android:exported="true"
