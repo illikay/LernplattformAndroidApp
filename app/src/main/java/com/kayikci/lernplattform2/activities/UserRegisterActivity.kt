@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
 
+
 class UserRegisterActivity : AppCompatActivity() {
 
     private lateinit var userRegisterBinding: ActivityUserRegisterBinding
@@ -61,12 +62,17 @@ class UserRegisterActivity : AppCompatActivity() {
 
                     } else {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, "Failed to register User", Toast.LENGTH_SHORT).show()
+                           Toast.makeText(
+                                context,
+                               response.errorBody()?.string()
+                                , Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "Failed to register User", Toast.LENGTH_SHORT).show()
+
                     }
                 }
             }
