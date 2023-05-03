@@ -16,7 +16,6 @@ import com.kayikci.lernplattform2.services.ServiceBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.regex.Pattern
 
 
 class UserRegisterActivity : AppCompatActivity() {
@@ -42,6 +41,9 @@ class UserRegisterActivity : AppCompatActivity() {
             val password = userRegisterBinding.passwordEditText.text.toString()
 
 
+            if (!validatePassword()) {
+                return@setOnClickListener
+            }
 
            val registerRequest = RegisterRequest(firstname,lastname,email,password)
 
@@ -80,11 +82,21 @@ class UserRegisterActivity : AppCompatActivity() {
         }
     }
 
-    fun isValidEmail(email: String): Boolean {
-        val emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$"
-        val pattern = Pattern.compile(emailRegex)
-        val matcher = pattern.matcher(email)
-        return matcher.matches()
+    private fun validatePassword(): Boolean {
+        val password: String = userRegisterBinding.passwordEditText.text.toString()
+        val checkPassword = Regex("^(?=.{10,}\$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\\W).*\$")
+
+        return if (password.isEmpty()) {
+            userRegisterBinding.passwordEditText.error = "Passwort darf nicht leer sein"
+            false
+        } else if (!password.matches(checkPassword)) {
+            userRegisterBinding.passwordEditText.error = "Bitte ein Passwort, das mindestens 1 Großbuchstabe, 1 Kleinbuchstabe, 1 Ziffer, " +
+                    "1 Sonderzeichen enthält und eine Länge von mindestens 10 hat eingeben"
+            false
+        } else {
+            userRegisterBinding.passwordEditText.error = null
+            true
+        }
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
