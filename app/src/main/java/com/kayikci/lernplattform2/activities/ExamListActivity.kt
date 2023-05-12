@@ -1,18 +1,22 @@
 package com.kayikci.lernplattform2.activities
 
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.kayikci.lernplattform2.R
 import com.kayikci.lernplattform2.databinding.ActivityExamListBinding
 import com.kayikci.lernplattform2.helpers.ExamAdapter
 import com.kayikci.lernplattform2.services.ExamService
+import com.kayikci.lernplattform2.services.PdfService
 import com.kayikci.lernplattform2.services.ServiceBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,6 +53,36 @@ class ExamListActivity : AppCompatActivity() {
         super.onResume()
 
         loadDestinations()
+    }
+
+    private fun createFile() {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/pdf"
+            putExtra(Intent.EXTRA_TITLE, "RecyclerView.pdf")
+        }
+        //startActivityForResult(intent, CREATE_FILE)
+        startForResult.launch(intent)
+    }
+
+    val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data?.data.also { uri ->
+                if (uri != null) {
+                    contentResolver.openOutputStream(uri).let {  outputStream ->
+                        val pdfService = PdfService()
+                        if (outputStream != null) {
+                            val adapter = activityExamListBinding.examRecyclerView.adapter as? ExamAdapter
+                            val items = adapter?.getItems()
+                            if (items != null) {
+                                pdfService.createPdfFromRecyclerView(items, outputStream)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun loadDestinations() {
@@ -96,6 +130,8 @@ class ExamListActivity : AppCompatActivity() {
         }
     }
 
+
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
@@ -106,6 +142,10 @@ class ExamListActivity : AppCompatActivity() {
                 val intent = Intent(this@ExamListActivity, WelcomeActivity::class.java)
                 finish()
                 startActivity(intent)
+                true
+            }
+            R.id.menu_pdfexport -> {
+                createFile()
                 true
             }
             else -> super.onOptionsItemSelected(item)

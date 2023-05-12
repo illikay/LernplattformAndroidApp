@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Exam(
     var id: Long? = 0,
-    var pruefungsName: String = "",
+    var pruefungsName: String? = "",
     var info: String? = "",
     var beschreibung: String? = "",
     var erstellDatum: String? = "",

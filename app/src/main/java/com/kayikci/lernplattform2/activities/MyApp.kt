@@ -6,6 +6,7 @@ import com.kayikci.lernplattform2.BuildConfig
 
 class MyApp : Application() {
 
+
     override fun onCreate() {
         super.onCreate()
 

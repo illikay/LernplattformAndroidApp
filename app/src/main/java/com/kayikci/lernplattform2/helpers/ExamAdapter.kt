@@ -1,13 +1,12 @@
 package com.kayikci.lernplattform2.helpers
 
 import android.content.Intent
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.kayikci.lernplattform2.R
-
 import com.kayikci.lernplattform2.activities.ExamDetailActivity
 import com.kayikci.lernplattform2.models.Exam
 
@@ -39,6 +38,10 @@ class ExamAdapter(private val destinationList: List<Exam>) :
 
     override fun getItemCount(): Int {
         return destinationList.size
+    }
+
+    fun getItems() : List<Exam> {
+        return destinationList
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
