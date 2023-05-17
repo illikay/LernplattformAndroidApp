@@ -50,6 +50,10 @@ class QuestionAdapter(private val questionList: List<Question>, private val exam
         return questionList.size
     }
 
+    fun getQuestionsByExamId() : List<Question> {
+        return questionList
+    }
+
     // Holds the views for adding it to image and text
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val textView: TextView = itemView.findViewById(R.id.txv_question)

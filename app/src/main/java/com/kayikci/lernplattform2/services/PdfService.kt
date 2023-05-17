@@ -4,59 +4,78 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import com.kayikci.lernplattform2.models.Exam
+import com.kayikci.lernplattform2.models.Question
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.io.OutputStream
 
 
 class PdfService {
-    fun createPdfFromRecyclerView(dataSource: List<Exam>, outputStream: OutputStream) {
 
 
-        // Create a new PdfDocument
-        val pdfDocument = PdfDocument()
+    fun createPdfFromList(dataSource: List<Exam>, outputStream: OutputStream) {
 
-        // Create a Paint object for drawing text
-        val paint = Paint()
-        paint.color = Color.BLACK
+        val coroutineScope = CoroutineScope(Dispatchers.Main)
 
-        // Set the page size (A4)
-        val pageWidth = 595
-        val pageHeight = 842
-
-        var yPos = 30f
-
-        // For each item in the RecyclerView, create a new page and draw the text
-        for (i in dataSource.indices) {
-            // Create a new PageInfo object and a new Page object
-            val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, i + 1).create()
-            val page = pdfDocument.startPage(pageInfo)
-
-            // Get the Canvas object from the Page and draw the text
-            val canvas = page.canvas
-
-            val pruefungsname = dataSource[i].pruefungsName
-            val info = dataSource[i].info
-            val beschreibung = dataSource[i].beschreibung
-
-            if (pruefungsname != null) {
-                canvas.drawText(pruefungsname    , 20f, yPos, paint)
-            }
-            yPos += 15f
-            if (info != null) {
-                canvas.drawText(info    , 20f, yPos, paint)
-            }
-            yPos += 15f
-            if (beschreibung != null) {
-                canvas.drawText(beschreibung    , 20f, yPos, paint)
-            }
+        coroutineScope.launch {
 
 
-            // Finish the page
-            pdfDocument.finishPage(page)
+            // Create a new PdfDocument
+            val pdfDocument = PdfDocument()
+
+            // Create a Paint object for drawing text
+            val paint = Paint()
+            paint.color = Color.BLACK
+
+            // Set the page size (A4)
+            val pageWidth = 595
+            val pageHeight = 842
+
+            var yPos = 30f
+
+            // For each item in the RecyclerView, create a new page and draw the text
+            for (i in dataSource.indices) {
+                // Create a new PageInfo object and a new Page object
+                val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, i + 1).create()
+                val page = pdfDocument.startPage(pageInfo)
+
+                // Get the Canvas object from the Page and draw the text
+                val canvas = page.canvas
+
+                val pruefungsname = dataSource[i].pruefungsName
+                val info = dataSource[i].info
+                val beschreibung = dataSource[i].beschreibung
+
+                if (pruefungsname != null) {
+                    canvas.drawText(pruefungsname, 20f, yPos, paint)
+                }
+                yPos += 15f
+                if (info != null) {
+                    canvas.drawText(info, 20f, yPos, paint)
+                }
+                yPos += 15f
+                if (beschreibung != null) {
+                    canvas.drawText(beschreibung, 20f, yPos, paint)
+                }
+                yPos += 15f
+
+
+                val questionList = withContext(Dispatchers.IO) {
+                    loadQuestionsByExam(dataSource[i].id!!)
+                }
+
+                for (question in questionList) {
+                    canvas.drawText(question.toString(), 20f, yPos, paint)
+                    yPos += 15f
+                }
+
+                pdfDocument.finishPage(page)
+
         }
-
-
-        // Write the PDF file to the external storage
         try {
             pdfDocument.writeTo(outputStream)
         } catch (e: IOException) {
@@ -66,4 +85,45 @@ class PdfService {
         // Close the PdfDocument
         pdfDocument.close()
     }
+
+    }
+
+    suspend fun loadQuestionsByExam(id: Long): List<Question> =
+        suspendCancellableCoroutine { continuation ->
+            val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+            val questionList: List<Question> = emptyList()
+
+            coroutineScope.launch(Dispatchers.IO) {
+                val questionService = ServiceBuilder.buildService(QuestionService::class.java)
+
+                try {
+                    val response = questionService.getQuestionList(id)
+
+                    if (response.isSuccessful) {
+                        println("getQuestionList-API-Request war erfolgreich")
+
+
+                        continuation.resume(response.body()!!, {})
+
+
+                    } else if (response.code() == 401) {
+                        println("Deine Session ist abgelaufen. Bitte logge dich nochmal ein")
+                        continuation.cancel()  // Du kannst auch einen spezifischen Fehler werfen, wenn du möchtest
+
+                    } else {
+                        println("getQuestionList-API-Request ist fehlgeschlagen")
+                        continuation.cancel()  // Du kannst auch einen spezifischen Fehler werfen, wenn du möchtest
+
+                    }
+                } catch (e: Exception) {
+                    println("getQuestionList-API-Request ist fehlgeschlagen. Ein Fehler ist aufgetreten")
+                    continuation.cancel()  // Du kannst auch einen spezifischen Fehler werfen, wenn du möchtest
+
+                }
+
+            }
+        }
+
+
 }

@@ -76,7 +76,7 @@ class ExamListActivity : AppCompatActivity() {
                             val adapter = activityExamListBinding.examRecyclerView.adapter as? ExamAdapter
                             val items = adapter?.getItems()
                             if (items != null) {
-                                pdfService.createPdfFromRecyclerView(items, outputStream)
+                                pdfService.createPdfFromList(items, outputStream)
                             }
                         }
                     }
