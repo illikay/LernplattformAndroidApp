@@ -15,7 +15,13 @@ data class Question(
     var aenderungsDatum: String? = "",
     var isBeantwortet: Boolean? = false,
     var exam: Exam? = null
-) : Parcelable
+) : Parcelable {
+    fun toPdfString(index: Int): String {
+        return "$index. Aufgabe: $questionFrage\n" +
+                "Aufgabenhinweis: $questionHinweis\n" +
+                "Musterlösung: $questionLoesung"
+    }
+}
 
 
 

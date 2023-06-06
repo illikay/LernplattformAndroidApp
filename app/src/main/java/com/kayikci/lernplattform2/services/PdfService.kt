@@ -1,5 +1,6 @@
 package com.kayikci.lernplattform2.services
 
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
@@ -35,7 +36,7 @@ class PdfService {
             val pageWidth = 595
             val pageHeight = 842
 
-            var yPos = 30f
+
 
             // For each item in the RecyclerView, create a new page and draw the text
             for (i in dataSource.indices) {
@@ -46,32 +47,30 @@ class PdfService {
                 // Get the Canvas object from the Page and draw the text
                 val canvas = page.canvas
 
-                val pruefungsname = dataSource[i].pruefungsName
-                val info = dataSource[i].info
-                val beschreibung = dataSource[i].beschreibung
+                var yPos = 30f // Reset yPos for each new page
 
-                if (pruefungsname != null) {
-                    canvas.drawText(pruefungsname, 20f, yPos, paint)
-                }
-                yPos += 15f
-                if (info != null) {
-                    canvas.drawText(info, 20f, yPos, paint)
-                }
-                yPos += 15f
-                if (beschreibung != null) {
-                    canvas.drawText(beschreibung, 20f, yPos, paint)
-                }
-                yPos += 15f
+                val examText = dataSource[i].toPdfString()
+                drawTextWithLineBreaks(canvas, examText, 20f, yPos, paint)
+
+                yPos += paint.textSize * examText.lines().size + 15f
+
+
+
+                //yPos += 15f
 
 
                 val questionList = withContext(Dispatchers.IO) {
                     loadQuestionsByExam(dataSource[i].id!!)
                 }
 
-                for (question in questionList) {
-                    canvas.drawText(question.toString(), 20f, yPos, paint)
-                    yPos += 15f
+
+                questionList.forEachIndexed { index, question ->
+                    val questionText = question.toPdfString(index + 1)
+                    drawTextWithLineBreaks(canvas, questionText, 20f, yPos, paint)
+                    yPos += paint.textSize * questionText.lines().size + 15f
                 }
+
+
 
                 pdfDocument.finishPage(page)
 
@@ -86,6 +85,15 @@ class PdfService {
         pdfDocument.close()
     }
 
+    }
+
+    private fun drawTextWithLineBreaks(canvas: Canvas, text: String, x: Float, y: Float, paint: Paint) {
+        val lines = text.split("\n")
+        var currentY = y
+        for (line in lines) {
+            canvas.drawText(line, x, currentY, paint)
+            currentY += paint.textSize
+        }
     }
 
     suspend fun loadQuestionsByExam(id: Long): List<Question> =
