@@ -1,6 +1,7 @@
 package com.kayikci.lernplattform2.helpers
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,22 @@ class ExamAdapter(private val destinationList: List<Exam>) :
         holder.destination = destinationList[position]
         holder.txvDestination.text = destinationList[position].pruefungsName
 
+        val item: Exam = destinationList[position]
+
+        if (item.isSelected) {
+            // Verändern Sie das Aussehen, um eine Auswahl anzuzeigen
+            holder.itemView.setBackgroundColor(Color.LTGRAY)
+        } else {
+            holder.itemView.setBackgroundColor(Color.TRANSPARENT)
+        }
+
+        //auf langes drücken reagieren
+        holder.itemView.setOnLongClickListener {
+            item.isSelected = !item.isSelected
+            notifyItemChanged(position)
+            true
+        }
+
 
 
         holder.itemView.setOnClickListener { v ->
@@ -42,6 +59,12 @@ class ExamAdapter(private val destinationList: List<Exam>) :
 
     fun getItems() : List<Exam> {
         return destinationList
+    }
+
+    fun getSelectedItems() : List<Exam> {
+        destinationList
+        val selectedItems = destinationList.filter { it.isSelected }
+        return selectedItems
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

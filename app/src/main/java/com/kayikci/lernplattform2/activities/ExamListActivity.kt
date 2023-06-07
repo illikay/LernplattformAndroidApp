@@ -59,7 +59,7 @@ class ExamListActivity : AppCompatActivity() {
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "application/pdf"
-            putExtra(Intent.EXTRA_TITLE, "RecyclerView.pdf")
+            putExtra(Intent.EXTRA_TITLE, "Klausuren.pdf")
         }
         //startActivityForResult(intent, CREATE_FILE)
         startForResult.launch(intent)
@@ -75,6 +75,36 @@ class ExamListActivity : AppCompatActivity() {
                         if (outputStream != null) {
                             val adapter = activityExamListBinding.examRecyclerView.adapter as? ExamAdapter
                             val items = adapter?.getItems()
+                            if (items != null) {
+                                pdfService.createPdfFromList(items, outputStream)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun createFileForSelectedItems() {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/pdf"
+            putExtra(Intent.EXTRA_TITLE, "Klausuren.pdf")
+        }
+        //startActivityForResult(intent, CREATE_FILE)
+        startForResultSelected.launch(intent)
+    }
+
+    val startForResultSelected = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data?.data.also { uri ->
+                if (uri != null) {
+                    contentResolver.openOutputStream(uri).let {  outputStream ->
+                        val pdfService = PdfService()
+                        if (outputStream != null) {
+                            val adapter = activityExamListBinding.examRecyclerView.adapter as? ExamAdapter
+                            val items = adapter?.getSelectedItems()
                             if (items != null) {
                                 pdfService.createPdfFromList(items, outputStream)
                             }
@@ -146,6 +176,10 @@ class ExamListActivity : AppCompatActivity() {
             }
             R.id.menu_pdfexport -> {
                 createFile()
+                true
+            }
+            R.id.menu_pdfexportselected -> {
+                createFileForSelectedItems()
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -13,6 +13,7 @@ data class Exam(
     var erstellDatum: String? = "",
     var aenderungsDatum: String? = "",
     var anzahlFragen: Int? = 0,
+    var isSelected: Boolean = false
 ) : Parcelable {
     fun toPdfString(): String {
         return "Name der Prüfung: $pruefungsName\n" +

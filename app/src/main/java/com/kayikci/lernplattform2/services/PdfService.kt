@@ -74,16 +74,16 @@ class PdfService {
 
                 pdfDocument.finishPage(page)
 
-        }
-        try {
-            pdfDocument.writeTo(outputStream)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
+            }
+            try {
+                pdfDocument.writeTo(outputStream)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
 
-        // Close the PdfDocument
-        pdfDocument.close()
-    }
+            // Close the PdfDocument
+            pdfDocument.close()
+        }
 
     }
 
