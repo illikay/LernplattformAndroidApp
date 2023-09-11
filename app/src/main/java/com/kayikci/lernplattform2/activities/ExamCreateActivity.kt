@@ -12,7 +12,8 @@ import com.kayikci.lernplattform2.services.ServiceBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.util.*
 
 class ExamCreateActivity : AppCompatActivity() {
@@ -38,10 +39,10 @@ class ExamCreateActivity : AppCompatActivity() {
             newExam.info = activityExamCreateBinding.etInfo.text.toString()
             newExam.beschreibung = activityExamCreateBinding.etBeschreibung.text.toString()
 
-            val format = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.GERMANY)
-            val dateString: String = format.format(Date())
-            newExam.erstellDatum = dateString
-            newExam.aenderungsDatum = dateString
+
+
+            newExam.erstellDatum = ZonedDateTime.now(ZoneOffset.UTC)
+            newExam.aenderungsDatum = ZonedDateTime.now(ZoneOffset.UTC)
             newExam.anzahlFragen = 5
 
             lifecycleScope.launch(Dispatchers.IO) {

@@ -1,15 +1,16 @@
 package com.kayikci.lernplattform2.services
 
 import android.os.Build
+import com.google.gson.GsonBuilder
 import com.kayikci.lernplattform2.activities.WelcomeActivity
-
+import com.kayikci.lernplattform2.helpers.ZonedDateTimeConverter
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
-import java.util.*
+import java.time.ZonedDateTime
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 
@@ -36,6 +37,10 @@ object ServiceBuilder {
         response
     }
 
+    private val gson = GsonBuilder()
+        .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeConverter)
+        .create()
+
 
 
     // Create OkHttp Client
@@ -47,7 +52,7 @@ object ServiceBuilder {
 
     // Create Retrofit Builder
     private val builder = Retrofit.Builder().baseUrl(URL)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(gson))
         .client(okHttp.build())
 
     // Create Retrofit Instance
