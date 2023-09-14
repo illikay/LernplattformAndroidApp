@@ -2,7 +2,6 @@ package com.kayikci.lernplattform2.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 
@@ -12,8 +11,8 @@ data class Exam(
     var pruefungsName: String? = "",
     var info: String? = "",
     var beschreibung: String? = "",
-    var erstellDatum: ZonedDateTime? = ZonedDateTime.now(ZoneOffset.UTC),
-    var aenderungsDatum: ZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC),
+    var erstellDatum: ZonedDateTime? = null,
+    var aenderungsDatum: ZonedDateTime? = null,
     var anzahlFragen: Int? = 0,
     var isSelected: Boolean = false
 ) : Parcelable {

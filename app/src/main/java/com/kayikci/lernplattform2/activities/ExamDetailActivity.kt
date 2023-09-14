@@ -19,8 +19,9 @@ import com.kayikci.lernplattform2.services.ServiceBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.ZoneOffset
+import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -94,11 +95,28 @@ class ExamDetailActivity : AppCompatActivity() {
                     val exam = response.body()
                     withContext(Dispatchers.Main) {
                         exam?.let {
+
+
                             activityExamDetailBinding.etName.setText(exam.pruefungsName)
                             activityExamDetailBinding.etInfo.setText(exam.info)
                             activityExamDetailBinding.etBeschreibung.setText(exam.beschreibung)
 
-                            activityExamDetailBinding.etErstellDatum.setText(exam.erstellDatum.toString())
+                            val utcErstellDatum: ZonedDateTime? = exam.erstellDatum
+                            val utcAenderungsDatum: ZonedDateTime? = exam.aenderungsDatum
+                            val germanErstelldatum: ZonedDateTime? = utcErstellDatum?.withZoneSameInstant(
+                                ZoneId.of("Europe/Berlin")
+                            )
+                            val germanAenderunsdatum: ZonedDateTime? = utcAenderungsDatum?.withZoneSameInstant(
+                                ZoneId.of("Europe/Berlin")
+                            )
+                            val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+                            val formattedErstelldatum: String? = germanErstelldatum?.format(formatter)
+                            val formattedAenderungsdatum : String? = germanAenderunsdatum?.format(formatter)
+
+
+                            activityExamDetailBinding.tvErstellDatum.setText("Erstelldatum: " + formattedErstelldatum)
+
+                            activityExamDetailBinding.tvAenderungsdatum.setText("Änderungsdatum: " + formattedAenderungsdatum)
 
                             activityExamDetailBinding.collapsingToolbar.title = exam.pruefungsName
                         }
@@ -133,16 +151,22 @@ class ExamDetailActivity : AppCompatActivity() {
 
         activityExamDetailBinding.btnUpdate.setOnClickListener {
 
-            val newExam = Exam()
+            val actualExam: Exam?
 
-            newExam.pruefungsName = activityExamDetailBinding.etName.text.toString()
-            newExam.info = activityExamDetailBinding.etInfo.text.toString()
-            newExam.beschreibung = activityExamDetailBinding.etBeschreibung.text.toString()
+            if (Build.VERSION.SDK_INT >= 33) {
+                actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
+            } else {
+                @Suppress("DEPRECATION") actualExam = intent.getParcelableExtra("examObject")
+            }
 
+            actualExam?.pruefungsName = activityExamDetailBinding.etName.text.toString()
+            actualExam?.info = activityExamDetailBinding.etInfo.text.toString()
+            actualExam?.beschreibung = activityExamDetailBinding.etBeschreibung.text.toString()
 
-            newExam.erstellDatum = ZonedDateTime.now(ZoneOffset.UTC)
-            newExam.aenderungsDatum = ZonedDateTime.now(ZoneOffset.UTC)
-            newExam.anzahlFragen = 3
+            //nur Änderungsdatum wird aktualisiert
+
+            actualExam?.aenderungsDatum = ZonedDateTime.now()
+            actualExam?.anzahlFragen = 3
 
             lifecycleScope.launch(Dispatchers.IO) {
 
@@ -150,7 +174,7 @@ class ExamDetailActivity : AppCompatActivity() {
 
 
                 try {
-                    val response = examService.updateExam(id, newExam)
+                    val response = examService.updateExam(id, actualExam!!)
                     if (response.isSuccessful) {
                         withContext(Dispatchers.Main) {
                             finish() // Move back to DestinationListActivity

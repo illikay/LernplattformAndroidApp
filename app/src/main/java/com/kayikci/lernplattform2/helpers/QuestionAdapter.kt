@@ -39,6 +39,8 @@ class QuestionAdapter(private val questionList: List<Question>, private val exam
             intent.putExtra("questionId", question.id)
             intent.putExtra("examId", examId)
 
+            intent.putExtra("questionObject", question)
+
             context.startActivity(intent)
 
         }

@@ -14,7 +14,7 @@ import com.kayikci.lernplattform2.services.ServiceBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.ZoneOffset
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
 
@@ -58,9 +58,9 @@ class QuestionCreateActivity : AppCompatActivity() {
             newQuestion.questionLoesung = activityQuestionCreateBinding.etLoesung.text.toString()
 
 
-
-            newQuestion.erstellDatum = ZonedDateTime.now(ZoneOffset.UTC)
-            newQuestion.aenderungsDatum = ZonedDateTime.now(ZoneOffset.UTC)
+            val zone = ZoneId.of("UTC+2")
+            newQuestion.erstellDatum = ZonedDateTime.now(zone)
+            newQuestion.aenderungsDatum = ZonedDateTime.now(zone)
             newQuestion.isBeantwortet = true
             newQuestion.exam = actualExam
 

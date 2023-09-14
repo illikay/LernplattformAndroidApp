@@ -12,9 +12,9 @@ import com.kayikci.lernplattform2.services.ServiceBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.*
+
 
 class ExamCreateActivity : AppCompatActivity() {
 
@@ -41,8 +41,10 @@ class ExamCreateActivity : AppCompatActivity() {
 
 
 
-            newExam.erstellDatum = ZonedDateTime.now(ZoneOffset.UTC)
-            newExam.aenderungsDatum = ZonedDateTime.now(ZoneOffset.UTC)
+            //Beim Erzeugen von einer Exam werden Erstell- und Änderungsdatum gesetzt
+
+            newExam.erstellDatum = ZonedDateTime.now()
+            newExam.aenderungsDatum = ZonedDateTime.now()
             newExam.anzahlFragen = 5
 
             lifecycleScope.launch(Dispatchers.IO) {

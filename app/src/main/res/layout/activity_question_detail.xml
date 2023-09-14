@@ -47,6 +47,24 @@
                 android:orientation="vertical"
                 android:layout_margin="24dp">
 
+            <TextView
+                    android:id="@+id/tv_erstellDatum"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Erstelldatum"
+                    android:maxLines="5"
+                    android:textSize="16sp" />
+
+            <TextView
+                    android:id="@+id/tv_aenderungsdatum"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Änderungsdatum"
+                    android:maxLines="5"
+                    android:textSize="16sp" />
+
             <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -54,6 +72,7 @@
                 <EditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
                         android:lines="10"
                         android:minLines="5"
                         android:gravity="center"
@@ -63,6 +82,8 @@
                         android:textColorHint="#546E7A" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+
 
             <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"

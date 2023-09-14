@@ -2,6 +2,7 @@ package com.kayikci.lernplattform2.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
@@ -14,9 +15,9 @@ import com.kayikci.lernplattform2.services.ServiceBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.time.ZoneOffset
+import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class QuestionDetailActivity : AppCompatActivity() {
@@ -64,6 +65,22 @@ class QuestionDetailActivity : AppCompatActivity() {
                             activityQuestionDetailBinding.etHinweis.setText(question.questionHinweis)
                             activityQuestionDetailBinding.etLoesung.setText(question.questionLoesung)
 
+                            val utcErstellDatum: ZonedDateTime? = question.erstellDatum
+                            val utcAenderungsDatum: ZonedDateTime? = question.aenderungsDatum
+                            val germanErstelldatum: ZonedDateTime? = utcErstellDatum?.withZoneSameInstant(
+                                ZoneId.of("Europe/Berlin")
+                            )
+                            val germanAenderunsdatum: ZonedDateTime? = utcAenderungsDatum?.withZoneSameInstant(
+                                ZoneId.of("Europe/Berlin")
+                            )
+                            val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+                            val formattedErstelldatum: String? = germanErstelldatum?.format(formatter)
+                            val formattedAenderungsdatum : String? = germanAenderunsdatum?.format(formatter)
+
+                            activityQuestionDetailBinding.tvErstellDatum.setText("Erstelldatum: " + formattedErstelldatum)
+
+                            activityQuestionDetailBinding.tvAenderungsdatum.setText("Änderunsdatum: " + formattedAenderungsdatum)
+
                             activityQuestionDetailBinding.questionCollapsingToolbar.title =
                                 question.questionFrage
                         }
@@ -97,24 +114,30 @@ class QuestionDetailActivity : AppCompatActivity() {
     private fun initUpdateButton(questionId: Long, examId: Long) {
 
         activityQuestionDetailBinding.btnUpdate.setOnClickListener {
-            val newQuestion = Question()
 
-            newQuestion.questionFrage =
+            val actualQuestion: Question?
+
+            if (Build.VERSION.SDK_INT >= 33) {
+                actualQuestion = intent.getParcelableExtra("questionObject", Question::class.java)
+            } else {
+                @Suppress("DEPRECATION") actualQuestion = intent.getParcelableExtra("questionObject")
+            }
+
+            actualQuestion?.questionFrage =
                 activityQuestionDetailBinding.etFragestellung.text.toString()
-            newQuestion.questionHinweis = activityQuestionDetailBinding.etHinweis.text.toString()
-            newQuestion.questionLoesung = activityQuestionDetailBinding.etLoesung.text.toString()
+            actualQuestion?.questionHinweis = activityQuestionDetailBinding.etHinweis.text.toString()
+            actualQuestion?.questionLoesung = activityQuestionDetailBinding.etLoesung.text.toString()
 
 
-            newQuestion.erstellDatum = ZonedDateTime.now(ZoneOffset.UTC)
-            newQuestion.aenderungsDatum = ZonedDateTime.now(ZoneOffset.UTC)
-            newQuestion.isBeantwortet = true
+            actualQuestion?.aenderungsDatum = ZonedDateTime.now()
+            actualQuestion?.isBeantwortet = true
 
             lifecycleScope.launch(Dispatchers.IO) {
 
                 val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
                 try {
-                    val response = questionService.updateQuestion(examId, questionId, newQuestion)
+                    val response = questionService.updateQuestion(examId, questionId, actualQuestion!!)
                     if (response.isSuccessful) {
                         withContext(Dispatchers.Main) {
                             finish() // Move back to DestinationListActivity
