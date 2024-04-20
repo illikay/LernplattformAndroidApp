@@ -13,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.ZonedDateTime
-import java.util.*
 
 
 class ExamCreateActivity : AppCompatActivity() {
@@ -38,7 +37,6 @@ class ExamCreateActivity : AppCompatActivity() {
             newExam.pruefungsName = activityExamCreateBinding.etName.text.toString()
             newExam.info = activityExamCreateBinding.etInfo.text.toString()
             newExam.beschreibung = activityExamCreateBinding.etBeschreibung.text.toString()
-
 
 
             //Beim Erzeugen von einer Exam werden Erstell- und Änderungsdatum gesetzt

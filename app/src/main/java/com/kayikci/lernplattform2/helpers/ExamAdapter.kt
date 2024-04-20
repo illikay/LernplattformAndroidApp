@@ -11,7 +11,7 @@ import com.kayikci.lernplattform2.R
 import com.kayikci.lernplattform2.activities.ExamDetailActivity
 import com.kayikci.lernplattform2.models.Exam
 
-class ExamAdapter(private val destinationList: List<Exam>) :
+class ExamAdapter(private val examList: List<Exam>) :
     RecyclerView.Adapter<ExamAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -22,10 +22,10 @@ class ExamAdapter(private val destinationList: List<Exam>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        holder.destination = destinationList[position]
-        holder.txvDestination.text = destinationList[position].pruefungsName
+        holder.exam = examList[position]
+        holder.txvExam.text = examList[position].pruefungsName
 
-        val item: Exam = destinationList[position]
+        val item: Exam = examList[position]
 
         if (item.isSelected) {
             // Verändern Sie das Aussehen, um eine Auswahl anzuzeigen
@@ -47,33 +47,33 @@ class ExamAdapter(private val destinationList: List<Exam>) :
             val context = v.context
 
             val intent = Intent(context, ExamDetailActivity::class.java)
-            intent.putExtra("examId", holder.destination!!.id)
-            intent.putExtra("examObject", holder.destination)
+            intent.putExtra("examId", holder.exam!!.id)
+            intent.putExtra("examObject", holder.exam)
             context.startActivity(intent)
         }
     }
 
     override fun getItemCount(): Int {
-        return destinationList.size
+        return examList.size
     }
 
     fun getItems() : List<Exam> {
-        return destinationList
+        return examList
     }
 
     fun getSelectedItems() : List<Exam> {
-        destinationList
-        val selectedItems = destinationList.filter { it.isSelected }
+        examList
+        val selectedItems = examList.filter { it.isSelected }
         return selectedItems
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        val txvDestination: TextView = itemView.findViewById(R.id.txv_exam)
-        var destination: Exam? = null
+        val txvExam: TextView = itemView.findViewById(R.id.txv_exam)
+        var exam: Exam? = null
 
         override fun toString(): String {
-            return """${super.toString()} '${txvDestination.text}'"""
+            return """${super.toString()} '${txvExam.text}'"""
         }
     }
 }

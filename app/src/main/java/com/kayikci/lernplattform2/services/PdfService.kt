@@ -100,7 +100,7 @@ class PdfService {
         suspendCancellableCoroutine { continuation ->
             val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-            val questionList: List<Question> = emptyList()
+
 
             coroutineScope.launch(Dispatchers.IO) {
                 val questionService = ServiceBuilder.buildService(QuestionService::class.java)
