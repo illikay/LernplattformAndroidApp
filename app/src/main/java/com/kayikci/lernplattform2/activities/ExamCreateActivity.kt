@@ -28,7 +28,7 @@ class ExamCreateActivity : AppCompatActivity() {
         setSupportActionBar(activityExamCreateBinding.toolbar)
         val context = this
 
-        // Show the Up button in the action bar.
+        // Show the Up button in the action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         activityExamCreateBinding.btnAdd.setOnClickListener {
