@@ -59,6 +59,7 @@ object ServiceBuilder {
     private val retrofit = builder.build()
 
     fun <T> buildService(serviceType: Class<T>): T {
-        return retrofit.create(serviceType)
+        return retrofit?.create(serviceType) ?: throw IllegalStateException("Retrofit instance is null")
     }
+
 }
