@@ -22,7 +22,6 @@ import kotlinx.coroutines.withContext
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 
 class ExamDetailActivity : AppCompatActivity() {
@@ -164,7 +163,6 @@ class ExamDetailActivity : AppCompatActivity() {
             actualExam?.beschreibung = activityExamDetailBinding.etBeschreibung.text.toString()
 
             //nur Änderungsdatum wird aktualisiert
-
             actualExam?.aenderungsDatum = ZonedDateTime.now()
             actualExam?.anzahlFragen = 3
 

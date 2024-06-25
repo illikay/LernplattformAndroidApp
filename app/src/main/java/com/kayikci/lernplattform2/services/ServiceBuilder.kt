@@ -23,19 +23,29 @@ object ServiceBuilder {
     // Create Logger
     private val logger = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
-    // Create a Custom Interceptor to apply Headers application wide
+
     private val headerInterceptor = Interceptor { chain ->
         var request = chain.request()
 
-        request = request.newBuilder()
+        // Skip Authorization header if not required
+
+        val skipAuth = request.url().toString().contains("usermanagement")
+
+        val builder = request.newBuilder()
             .addHeader("x-device-type", Build.DEVICE)
             .addHeader("Accept-Language", Locale.getDefault().language)
-            .addHeader("Authorization", "Bearer ${WelcomeActivity.globalToken}" )
-            .build()
 
-        val response = chain.proceed(request)
-        response
+        if (!skipAuth) {
+            builder.addHeader("Authorization", "Bearer ${WelcomeActivity.globalToken}")
+        }
+
+        request = builder.build()
+
+        chain.proceed(request)
     }
+
+    // Create a Custom Interceptor to apply Headers application wide
+
 
     private val gson = GsonBuilder()
         .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeConverter)
