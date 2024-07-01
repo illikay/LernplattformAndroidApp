@@ -28,6 +28,9 @@ class ExamDetailActivity : AppCompatActivity() {
 
     private lateinit var activityExamDetailBinding: ActivityExamDetailBinding
 
+        private var examId: Long = 0
+        private  var actualExam:Exam? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,10 +42,7 @@ class ExamDetailActivity : AppCompatActivity() {
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val id: Long = intent.getLongExtra("examId", 0)
 
-
-        val actualExam: Exam?
 
         if (Build.VERSION.SDK_INT >= 33) {
             actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
@@ -60,18 +60,27 @@ class ExamDetailActivity : AppCompatActivity() {
 
 
 
-        loadDetails(id)
+        examId = intent.getLongExtra("examId", 0)
+        println("Exam ID in onCreate: $examId")
 
-        loadQuestions(id)
+        if (examId != 0L) {
+            loadDetails(examId)
 
-        initUpdateButton(id)
+            loadQuestions(examId)
 
-        initDeleteButton(id)
+            initUpdateButton(examId)
+
+            initDeleteButton(examId)
+        } else {
+            println("Received examId is 0 in onCreate")
+        }
+
+
 
         activityExamDetailBinding.questionfab.setOnClickListener {
 
             val intent = Intent(this@ExamDetailActivity, QuestionCreateActivity::class.java)
-            intent.putExtra("examId", id)
+            intent.putExtra("examId", examId)
             intent.putExtra("examObject", actualExam)
 
 
@@ -79,6 +88,26 @@ class ExamDetailActivity : AppCompatActivity() {
         }
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        examId = intent.getLongExtra("examId", 0)
+        if (Build.VERSION.SDK_INT >= 33) {
+            actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
+        } else {
+            @Suppress("DEPRECATION") actualExam = intent.getParcelableExtra("examObject")
+        }
+        if (examId != 0L) {
+            println("Reloading exams in onResume with ID: $examId")
+            loadDetails(examId)
+            loadQuestions(examId)
+            initUpdateButton(examId)
+            initDeleteButton(examId)
+        } else {
+            println("Received examId is 0 in onResume")
+        }
+    }
+
 
     private fun loadDetails(id: Long) {
 
@@ -150,9 +179,9 @@ class ExamDetailActivity : AppCompatActivity() {
 
         activityExamDetailBinding.btnUpdate.setOnClickListener {
 
-            val actualExam: Exam?
 
-            if (Build.VERSION.SDK_INT >= 33) {
+
+           if (Build.VERSION.SDK_INT >= 33) {
                 actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
             } else {
                 @Suppress("DEPRECATION") actualExam = intent.getParcelableExtra("examObject")
@@ -164,7 +193,9 @@ class ExamDetailActivity : AppCompatActivity() {
 
             //nur Änderungsdatum wird aktualisiert
             actualExam?.aenderungsDatum = ZonedDateTime.now()
-            actualExam?.anzahlFragen = 3
+
+            println("das ist die asdf aktuelle Exam: " + actualExam.toString())
+            println("das ist die asdf aktuelle examId: $id")
 
             lifecycleScope.launch(Dispatchers.IO) {
 
@@ -250,14 +281,7 @@ class ExamDetailActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onResume() {
-        super.onResume()
 
-        val id: Long = intent.getLongExtra("examId", 0)
-        //loadQuestions(id)
-
-        loadQuestions(id)
-    }
 
     private fun loadQuestions(id: Long) {
 
@@ -269,7 +293,7 @@ class ExamDetailActivity : AppCompatActivity() {
                 val response = questionService.getQuestionList(id)
                 if (response.isSuccessful) {
                     val questionList = response.body()!!
-                    val adapter = QuestionAdapter(questionList, id)
+                    val adapter = QuestionAdapter(questionList, id, actualExam)
                     withContext(Dispatchers.Main) {
 
                         activityExamDetailBinding.questionRecyclerView.adapter = adapter

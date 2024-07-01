@@ -1,8 +1,10 @@
 package com.kayikci.lernplattform2.activities
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -16,11 +18,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
 
 
 class QuestionCreateActivity : AppCompatActivity() {
     private lateinit var activityQuestionCreateBinding: ActivityQuestionCreateBinding
+    var examId:Long = 0
+    var actualExam:Exam? = null;
 
     @SuppressLint("WeekBasedYear")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,10 +39,10 @@ class QuestionCreateActivity : AppCompatActivity() {
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val examId = intent.getLongExtra("examId", 0)
+        examId = intent.getLongExtra("examId", 0)
 
 
-        val actualExam: Exam?
+
 
         if (Build.VERSION.SDK_INT >= 33) {
             actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
@@ -89,6 +92,18 @@ class QuestionCreateActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == android.R.id.home) {
+            val intent = Intent(this, ExamDetailActivity::class.java)
+            intent.putExtra("examId", examId) // Setze die aktuelle examId
+            intent.putExtra("examObject", actualExam)
+            navigateUpTo(intent)
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }

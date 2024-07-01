@@ -8,9 +8,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.kayikci.lernplattform2.R
 import com.kayikci.lernplattform2.activities.QuestionDetailActivity
+import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.models.Question
 
-class QuestionAdapter(private val questionList: List<Question>, private val examId: Long) :
+class QuestionAdapter(private val questionList: List<Question>, private val examId: Long, private val examObject: Exam?) :
     RecyclerView.Adapter<QuestionAdapter.ViewHolder>() {
 
     // create new views
@@ -38,6 +39,7 @@ class QuestionAdapter(private val questionList: List<Question>, private val exam
             val intent = Intent(context, QuestionDetailActivity::class.java)
             intent.putExtra("questionId", question.id)
             intent.putExtra("examId", examId)
+            intent.putExtra("examObject", examObject)
 
             intent.putExtra("questionObject", question)
 

@@ -45,7 +45,6 @@ class ExamAdapter(private val examList: List<Exam>) :
 
         holder.itemView.setOnClickListener { v ->
             val context = v.context
-
             val intent = Intent(context, ExamDetailActivity::class.java)
             intent.putExtra("examId", holder.exam!!.id)
             intent.putExtra("examObject", holder.exam)

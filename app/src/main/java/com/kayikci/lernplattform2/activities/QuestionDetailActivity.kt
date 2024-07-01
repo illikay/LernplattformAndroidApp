@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.kayikci.lernplattform2.databinding.ActivityQuestionDetailBinding
+import com.kayikci.lernplattform2.models.Exam
 import com.kayikci.lernplattform2.models.Question
 import com.kayikci.lernplattform2.services.QuestionService
 import com.kayikci.lernplattform2.services.ServiceBuilder
@@ -18,11 +19,13 @@ import kotlinx.coroutines.withContext
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 class QuestionDetailActivity : AppCompatActivity() {
 
     private lateinit var activityQuestionDetailBinding: ActivityQuestionDetailBinding
+    var examId:Long = 0
+    var actualExam:Exam? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +38,13 @@ class QuestionDetailActivity : AppCompatActivity() {
 
         val questionId = intent.getLongExtra("questionId", 0)
 
-        val examId = intent.getLongExtra("examId", 0)
+        examId = intent.getLongExtra("examId", 0)
+
+        if (Build.VERSION.SDK_INT >= 33) {
+            actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
+        } else {
+            @Suppress("DEPRECATION") actualExam = intent.getParcelableExtra("examObject")
+        }
 
 
         loadDetails(questionId, examId)
@@ -213,7 +222,10 @@ class QuestionDetailActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         if (id == android.R.id.home) {
-            navigateUpTo(Intent(this, ExamDetailActivity::class.java))
+            val intent = Intent(this, ExamDetailActivity::class.java)
+            intent.putExtra("examId", examId)
+            intent.putExtra("examObject", actualExam)
+            navigateUpTo(intent)
             return true
         }
         return super.onOptionsItemSelected(item)
