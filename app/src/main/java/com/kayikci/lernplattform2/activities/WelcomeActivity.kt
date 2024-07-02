@@ -18,12 +18,11 @@ class WelcomeActivity : AppCompatActivity() {
     private lateinit var activityWelcomeBinding: ActivityWelcomeBinding
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val context = this
 
-       activityWelcomeBinding = ActivityWelcomeBinding.inflate(layoutInflater)
+        activityWelcomeBinding = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(activityWelcomeBinding.root)
 
 
@@ -74,7 +73,6 @@ class WelcomeActivity : AppCompatActivity() {
         }
 
     }
-
 
 
     companion object {

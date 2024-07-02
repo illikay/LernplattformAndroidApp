@@ -43,7 +43,6 @@ class ExamCreateActivity : AppCompatActivity() {
 
             newExam.erstellDatum = ZonedDateTime.now()
             newExam.aenderungsDatum = ZonedDateTime.now()
-            newExam.anzahlFragen = 5
 
             lifecycleScope.launch(Dispatchers.IO) {
                 val examService = ServiceBuilder.buildService(ExamService::class.java)

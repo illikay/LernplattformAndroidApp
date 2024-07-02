@@ -22,8 +22,7 @@ import java.time.ZonedDateTime
 
 class QuestionCreateActivity : AppCompatActivity() {
     private lateinit var activityQuestionCreateBinding: ActivityQuestionCreateBinding
-    var examId:Long = 0
-    var actualExam:Exam? = null;
+
 
     @SuppressLint("WeekBasedYear")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +38,10 @@ class QuestionCreateActivity : AppCompatActivity() {
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        examId = intent.getLongExtra("examId", 0)
+        val examId = intent.getLongExtra("examId", 0)
 
 
-
+        val actualExam: Exam?
 
         if (Build.VERSION.SDK_INT >= 33) {
             actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
@@ -96,6 +95,15 @@ class QuestionCreateActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
+        val examId = intent.getLongExtra("examId", 0)
+        val actualExam: Exam?
+
+        if (Build.VERSION.SDK_INT >= 33) {
+            actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            actualExam = intent.getParcelableExtra("examObject")
+        }
         if (id == android.R.id.home) {
             val intent = Intent(this, ExamDetailActivity::class.java)
             intent.putExtra("examId", examId) // Setze die aktuelle examId

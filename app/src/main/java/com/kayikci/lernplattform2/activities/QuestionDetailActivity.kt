@@ -23,9 +23,6 @@ import java.time.format.DateTimeFormatter
 class QuestionDetailActivity : AppCompatActivity() {
 
     private lateinit var activityQuestionDetailBinding: ActivityQuestionDetailBinding
-    var examId:Long = 0
-    var actualExam:Exam? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +35,9 @@ class QuestionDetailActivity : AppCompatActivity() {
 
         val questionId = intent.getLongExtra("questionId", 0)
 
-        examId = intent.getLongExtra("examId", 0)
+        val examId = intent.getLongExtra("examId", 0)
+
+        val actualExam: Exam?
 
         if (Build.VERSION.SDK_INT >= 33) {
             actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
@@ -76,15 +75,19 @@ class QuestionDetailActivity : AppCompatActivity() {
 
                             val utcErstellDatum: ZonedDateTime? = question.erstellDatum
                             val utcAenderungsDatum: ZonedDateTime? = question.aenderungsDatum
-                            val germanErstelldatum: ZonedDateTime? = utcErstellDatum?.withZoneSameInstant(
-                                ZoneId.of("Europe/Berlin")
-                            )
-                            val germanAenderunsdatum: ZonedDateTime? = utcAenderungsDatum?.withZoneSameInstant(
-                                ZoneId.of("Europe/Berlin")
-                            )
+                            val germanErstelldatum: ZonedDateTime? =
+                                utcErstellDatum?.withZoneSameInstant(
+                                    ZoneId.of("Europe/Berlin")
+                                )
+                            val germanAenderunsdatum: ZonedDateTime? =
+                                utcAenderungsDatum?.withZoneSameInstant(
+                                    ZoneId.of("Europe/Berlin")
+                                )
                             val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
-                            val formattedErstelldatum: String? = germanErstelldatum?.format(formatter)
-                            val formattedAenderungsdatum : String? = germanAenderunsdatum?.format(formatter)
+                            val formattedErstelldatum: String? =
+                                germanErstelldatum?.format(formatter)
+                            val formattedAenderungsdatum: String? =
+                                germanAenderunsdatum?.format(formatter)
 
                             activityQuestionDetailBinding.tvErstellDatum.setText("Erstelldatum: " + formattedErstelldatum)
 
@@ -129,13 +132,16 @@ class QuestionDetailActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= 33) {
                 actualQuestion = intent.getParcelableExtra("questionObject", Question::class.java)
             } else {
-                @Suppress("DEPRECATION") actualQuestion = intent.getParcelableExtra("questionObject")
+                @Suppress("DEPRECATION") actualQuestion =
+                    intent.getParcelableExtra("questionObject")
             }
 
             actualQuestion?.questionFrage =
                 activityQuestionDetailBinding.etFragestellung.text.toString()
-            actualQuestion?.questionHinweis = activityQuestionDetailBinding.etHinweis.text.toString()
-            actualQuestion?.questionLoesung = activityQuestionDetailBinding.etLoesung.text.toString()
+            actualQuestion?.questionHinweis =
+                activityQuestionDetailBinding.etHinweis.text.toString()
+            actualQuestion?.questionLoesung =
+                activityQuestionDetailBinding.etLoesung.text.toString()
 
 
             actualQuestion?.aenderungsDatum = ZonedDateTime.now()
@@ -146,7 +152,8 @@ class QuestionDetailActivity : AppCompatActivity() {
                 val questionService = ServiceBuilder.buildService(QuestionService::class.java)
 
                 try {
-                    val response = questionService.updateQuestion(examId, questionId, actualQuestion!!)
+                    val response =
+                        questionService.updateQuestion(examId, questionId, actualQuestion!!)
                     if (response.isSuccessful) {
                         withContext(Dispatchers.Main) {
                             finish() // Move back to DestinationListActivity
@@ -221,6 +228,15 @@ class QuestionDetailActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
+        val examId = intent.getLongExtra("examId", 0)
+        val actualExam: Exam?
+
+        if (Build.VERSION.SDK_INT >= 33) {
+            actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            actualExam = intent.getParcelableExtra("examObject")
+        }
         if (id == android.R.id.home) {
             val intent = Intent(this, ExamDetailActivity::class.java)
             intent.putExtra("examId", examId)

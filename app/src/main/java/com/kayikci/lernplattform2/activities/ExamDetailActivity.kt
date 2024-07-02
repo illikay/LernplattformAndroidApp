@@ -28,10 +28,6 @@ class ExamDetailActivity : AppCompatActivity() {
 
     private lateinit var activityExamDetailBinding: ActivityExamDetailBinding
 
-        private var examId: Long = 0
-        private  var actualExam:Exam? = null
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityExamDetailBinding = ActivityExamDetailBinding.inflate(layoutInflater)
@@ -42,6 +38,7 @@ class ExamDetailActivity : AppCompatActivity() {
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val actualExam: Exam?
 
 
         if (Build.VERSION.SDK_INT >= 33) {
@@ -59,8 +56,7 @@ class ExamDetailActivity : AppCompatActivity() {
         recyclerview.layoutManager = LinearLayoutManager(this)
 
 
-
-        examId = intent.getLongExtra("examId", 0)
+        val examId = intent.getLongExtra("examId", 0)
         println("Exam ID in onCreate: $examId")
 
         if (examId != 0L) {
@@ -91,7 +87,8 @@ class ExamDetailActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        examId = intent.getLongExtra("examId", 0)
+        val examId = intent.getLongExtra("examId", 0)
+        val actualExam: Exam?
         if (Build.VERSION.SDK_INT >= 33) {
             actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
         } else {
@@ -131,15 +128,19 @@ class ExamDetailActivity : AppCompatActivity() {
 
                             val utcErstellDatum: ZonedDateTime? = exam.erstellDatum
                             val utcAenderungsDatum: ZonedDateTime? = exam.aenderungsDatum
-                            val germanErstelldatum: ZonedDateTime? = utcErstellDatum?.withZoneSameInstant(
-                                ZoneId.of("Europe/Berlin")
-                            )
-                            val germanAenderunsdatum: ZonedDateTime? = utcAenderungsDatum?.withZoneSameInstant(
-                                ZoneId.of("Europe/Berlin")
-                            )
+                            val germanErstelldatum: ZonedDateTime? =
+                                utcErstellDatum?.withZoneSameInstant(
+                                    ZoneId.of("Europe/Berlin")
+                                )
+                            val germanAenderunsdatum: ZonedDateTime? =
+                                utcAenderungsDatum?.withZoneSameInstant(
+                                    ZoneId.of("Europe/Berlin")
+                                )
                             val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
-                            val formattedErstelldatum: String? = germanErstelldatum?.format(formatter)
-                            val formattedAenderungsdatum : String? = germanAenderunsdatum?.format(formatter)
+                            val formattedErstelldatum: String? =
+                                germanErstelldatum?.format(formatter)
+                            val formattedAenderungsdatum: String? =
+                                germanAenderunsdatum?.format(formatter)
 
 
                             activityExamDetailBinding.tvErstellDatum.setText("Erstelldatum: " + formattedErstelldatum)
@@ -149,7 +150,6 @@ class ExamDetailActivity : AppCompatActivity() {
                             activityExamDetailBinding.collapsingToolbar.title = exam.pruefungsName
                         }
                     }
-
 
 
                 } else {
@@ -179,9 +179,9 @@ class ExamDetailActivity : AppCompatActivity() {
 
         activityExamDetailBinding.btnUpdate.setOnClickListener {
 
+            val actualExam: Exam?
 
-
-           if (Build.VERSION.SDK_INT >= 33) {
+            if (Build.VERSION.SDK_INT >= 33) {
                 actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
             } else {
                 @Suppress("DEPRECATION") actualExam = intent.getParcelableExtra("examObject")
@@ -282,12 +282,19 @@ class ExamDetailActivity : AppCompatActivity() {
     }
 
 
-
     private fun loadQuestions(id: Long) {
 
         lifecycleScope.launch(Dispatchers.IO) {
 
             val questionService = ServiceBuilder.buildService(QuestionService::class.java)
+
+            val actualExam: Exam?
+
+            if (Build.VERSION.SDK_INT >= 33) {
+                actualExam = intent.getParcelableExtra("examObject", Exam::class.java)
+            } else {
+                @Suppress("DEPRECATION") actualExam = intent.getParcelableExtra("examObject")
+            }
 
             try {
                 val response = questionService.getQuestionList(id)
@@ -298,8 +305,6 @@ class ExamDetailActivity : AppCompatActivity() {
 
                         activityExamDetailBinding.questionRecyclerView.adapter = adapter
                     }
-
-
 
 
                 } else if (response.code() == 401) {

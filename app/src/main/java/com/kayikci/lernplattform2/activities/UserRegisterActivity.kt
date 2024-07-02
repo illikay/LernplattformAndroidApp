@@ -45,7 +45,7 @@ class UserRegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-           val registerRequest = RegisterRequest(firstname,lastname,email,password)
+            val registerRequest = RegisterRequest(firstname, lastname, email, password)
 
             lifecycleScope.launch(Dispatchers.IO) {
 
@@ -56,24 +56,29 @@ class UserRegisterActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         WelcomeActivity.globalToken = response.body()?.token
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, "Successfully registered User", Toast.LENGTH_SHORT)
+                            Toast.makeText(
+                                context,
+                                "Successfully registered User",
+                                Toast.LENGTH_SHORT
+                            )
                                 .show()
-                            val intent = Intent(this@UserRegisterActivity, WelcomeActivity::class.java)
+                            val intent =
+                                Intent(this@UserRegisterActivity, WelcomeActivity::class.java)
                             startActivity(intent)
                         }
 
                     } else {
                         withContext(Dispatchers.Main) {
-                           Toast.makeText(
+                            Toast.makeText(
                                 context,
-                               response.errorBody()?.string()
-                                , Toast.LENGTH_LONG
+                                response.errorBody()?.string(), Toast.LENGTH_LONG
                             ).show()
                         }
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Failed to register User", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Failed to register User", Toast.LENGTH_SHORT)
+                            .show()
 
                     }
                 }
@@ -84,20 +89,19 @@ class UserRegisterActivity : AppCompatActivity() {
 
     private fun validatePassword(): Boolean {
         val password: String = userRegisterBinding.passwordEditText.text.toString().trim()
-        val checkPassword = Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!?@#$%^&+=])(?=\\S+$).{8,}$")
+        val checkPassword =
+            Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!?@#$%^&+=])(?=\\S+$).{8,}$")
         //val checkSpaces = Regex("[^\\s]+")
 
         return if (password.isEmpty()) {
             userRegisterBinding.passwordEditText.error = "Passwort darf nicht leer sein"
             false
-        }
-        else if (!password.matches(checkPassword)) {
-            userRegisterBinding.passwordEditText.error = "Bitte ein Passwort, das mindestens 1 Großbuchstabe, 1 Kleinbuchstabe, 1 Ziffer, " +
-                    "1 Sonderzeichen enthält, keine Leerzeichen enthält und eine Länge von mindestens 10 hat eingeben"
+        } else if (!password.matches(checkPassword)) {
+            userRegisterBinding.passwordEditText.error =
+                "Bitte ein Passwort, das mindestens 1 Großbuchstabe, 1 Kleinbuchstabe, 1 Ziffer, " +
+                        "1 Sonderzeichen enthält, keine Leerzeichen enthält und eine Länge von mindestens 10 hat eingeben"
             false
-        }
-
-        else {
+        } else {
             userRegisterBinding.passwordEditText.error = null
             true
         }
@@ -111,28 +115,24 @@ class UserRegisterActivity : AppCompatActivity() {
         return if (firstName.isEmpty()) {
             userRegisterBinding.firstnameEditText.error = "Vorname darf nicht leer sein"
             false
-        }
-        else if (lastName.isEmpty()) {
+        } else if (lastName.isEmpty()) {
             userRegisterBinding.lastnameEditText.error = "Nachname darf nicht leer sein"
             false
-        }
-        else if (firstName.length > 20) {
+        } else if (firstName.length > 20) {
             userRegisterBinding.firstnameEditText.error = "Vorname ist zu lang"
             false
-        }
-        else if (lastName.length > 20) {
+        } else if (lastName.length > 20) {
             userRegisterBinding.lastnameEditText.error = "Nachname ist zu lang"
             false
-        }
-        else if (!firstName.matches(checkSpaces)) {
-            userRegisterBinding.firstnameEditText.error = "In Vorname sind keine Leerzeichen erlaubt"
+        } else if (!firstName.matches(checkSpaces)) {
+            userRegisterBinding.firstnameEditText.error =
+                "In Vorname sind keine Leerzeichen erlaubt"
             false
-        }
-        else if (!lastName.matches(checkSpaces)) {
-            userRegisterBinding.lastnameEditText.error = "In Nachname sind keine Leerzeichen erlaubt"
+        } else if (!lastName.matches(checkSpaces)) {
+            userRegisterBinding.lastnameEditText.error =
+                "In Nachname sind keine Leerzeichen erlaubt"
             false
-        }
-        else {
+        } else {
             userRegisterBinding.firstnameEditText.error = null
             userRegisterBinding.lastnameEditText.error = null
             true
@@ -160,12 +160,14 @@ class UserRegisterActivity : AppCompatActivity() {
                 finish()
                 true
             }
+
             R.id.menu_logout -> {
                 val intent = Intent(this@UserRegisterActivity, WelcomeActivity::class.java)
                 finish()
                 startActivity(intent)
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

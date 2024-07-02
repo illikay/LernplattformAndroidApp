@@ -48,7 +48,6 @@ class ExamListActivity : AppCompatActivity() {
     }
 
 
-
     override fun onResume() {
         super.onResume()
 
@@ -65,25 +64,26 @@ class ExamListActivity : AppCompatActivity() {
         startForResult.launch(intent)
     }
 
-    val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val intent = result.data?.data.also { uri ->
-                if (uri != null) {
-                    contentResolver.openOutputStream(uri).let {  outputStream ->
-                        val pdfService = PdfService()
-                        if (outputStream != null) {
-                            val adapter = activityExamListBinding.examRecyclerView.adapter as? ExamAdapter
-                            val items = adapter?.getItems()
-                            if (items != null) {
-                                pdfService.createPdfFromList(items, outputStream)
+    val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result.data?.data.also { uri ->
+                    if (uri != null) {
+                        contentResolver.openOutputStream(uri).let { outputStream ->
+                            val pdfService = PdfService()
+                            if (outputStream != null) {
+                                val adapter =
+                                    activityExamListBinding.examRecyclerView.adapter as? ExamAdapter
+                                val items = adapter?.getItems()
+                                if (items != null) {
+                                    pdfService.createPdfFromList(items, outputStream)
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
 
     private fun createFileForSelectedItems() {
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
@@ -95,25 +95,26 @@ class ExamListActivity : AppCompatActivity() {
         startForResultSelected.launch(intent)
     }
 
-    val startForResultSelected = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val intent = result.data?.data.also { uri ->
-                if (uri != null) {
-                    contentResolver.openOutputStream(uri).let {  outputStream ->
-                        val pdfService = PdfService()
-                        if (outputStream != null) {
-                            val adapter = activityExamListBinding.examRecyclerView.adapter as? ExamAdapter
-                            val items = adapter?.getSelectedItems()
-                            if (items != null) {
-                                pdfService.createPdfFromList(items, outputStream)
+    val startForResultSelected =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result.data?.data.also { uri ->
+                    if (uri != null) {
+                        contentResolver.openOutputStream(uri).let { outputStream ->
+                            val pdfService = PdfService()
+                            if (outputStream != null) {
+                                val adapter =
+                                    activityExamListBinding.examRecyclerView.adapter as? ExamAdapter
+                                val items = adapter?.getSelectedItems()
+                                if (items != null) {
+                                    pdfService.createPdfFromList(items, outputStream)
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
 
     private fun loadDestinations() {
 
@@ -161,27 +162,30 @@ class ExamListActivity : AppCompatActivity() {
     }
 
 
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
                 finish()
                 true
             }
+
             R.id.menu_logout -> {
                 val intent = Intent(this@ExamListActivity, WelcomeActivity::class.java)
                 finish()
                 startActivity(intent)
                 true
             }
+
             R.id.menu_pdfexport -> {
                 createFile()
                 true
             }
+
             R.id.menu_pdfexportselected -> {
                 createFileForSelectedItems()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
